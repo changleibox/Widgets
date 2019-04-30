@@ -15,6 +15,7 @@ import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -181,6 +182,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         mDaySpinner.setFormatter(sDayFormatter);
         mDaySpinner.setOnLongPressUpdateInterval(100);
         mDaySpinner.setOnValueChangedListener(onChangeListener);
+        mDaySpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mDaySpinnerInput = (EditText) mDaySpinner.findViewById(numberpickerInputId);
         mDaySpinnerInput.setFilters(new InputFilter[0]);
 
@@ -192,6 +194,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         mMonthSpinner.setDisplayedValues(mShortMonths);
         mMonthSpinner.setOnLongPressUpdateInterval(200);
         mMonthSpinner.setOnValueChangedListener(onChangeListener);
+        mMonthSpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mMonthSpinnerInput = (EditText) mMonthSpinner.findViewById(numberpickerInputId);
         mMonthSpinnerInput.setFilters(new InputFilter[0]);
 
@@ -200,6 +203,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         mYearSpinner.setFormatter(sYearFormatter);
         mYearSpinner.setOnLongPressUpdateInterval(100);
         mYearSpinner.setOnValueChangedListener(onChangeListener);
+        mYearSpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mYearSpinnerInput = (EditText) mYearSpinner.findViewById(numberpickerInputId);
         mYearSpinnerInput.setFilters(new InputFilter[0]);
 
