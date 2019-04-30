@@ -125,8 +125,7 @@ public class DatePicker extends FrameLayout {
         });
     }
 
-    private DatePickerDelegate createSpinnerUIDelegate(Context context, AttributeSet attrs,
-                                                       int defStyleAttr, int defStyleRes) {
+    protected DatePickerDelegate createSpinnerUIDelegate(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         return new DatePickerSpinnerDelegate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 
@@ -140,8 +139,7 @@ public class DatePicker extends FrameLayout {
      * @param onDateChangedListener How user is notified date is changed by
      *                              user, can be null.
      */
-    public void init(int year, int monthOfYear, int dayOfMonth,
-                     OnDateChangedListener onDateChangedListener) {
+    public void init(int year, int monthOfYear, int dayOfMonth, OnDateChangedListener onDateChangedListener) {
         mDelegate.init(year, monthOfYear, dayOfMonth, onDateChangedListener);
     }
 
