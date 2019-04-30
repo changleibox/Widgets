@@ -638,35 +638,4 @@ class DatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate {
             }
         }
     }
-
-    private static class TwoDigitFormatter implements NumberPicker.Formatter {
-        final StringBuilder mBuilder = new StringBuilder();
-
-        java.util.Formatter mFmt;
-
-        final Object[] mArgs = new Object[1];
-
-        TwoDigitFormatter() {
-            final Locale locale = Locale.getDefault();
-            init(locale);
-        }
-
-        private void init(Locale locale) {
-            mFmt = createFormatter(locale);
-        }
-
-        public String format(int value) {
-            final Locale currentLocale = Locale.getDefault();
-            mArgs[0] = value;
-            mBuilder.delete(0, mBuilder.length());
-            mFmt.format("%02d", mArgs);
-            return mFmt.toString();
-        }
-
-        private java.util.Formatter createFormatter(Locale locale) {
-            return new java.util.Formatter(mBuilder, locale);
-        }
-    }
-
-    private static final TwoDigitFormatter sTwoDigitFormatter = new TwoDigitFormatter();
 }
