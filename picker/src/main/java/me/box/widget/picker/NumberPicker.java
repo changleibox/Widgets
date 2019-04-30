@@ -1617,18 +1617,30 @@ public class NumberPicker extends LinearLayout {
             }
         }
 
+        final float currentScrollOffset = mCurrentScrollOffset;
+        final float initialScrollOffset = mInitialScrollOffset;
+        final float pullOffset = (currentScrollOffset - initialScrollOffset) / initialScrollOffset;
         // draw the selector wheel
         int[] selectorIndices = mSelectorIndices;
         for (int i = 0; i < selectorIndices.length; i++) {
             int selectorIndex = selectorIndices[i];
-            String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
+            final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
             // Do not draw the middle item if input is visible since the input
             // is shown only if the wheel is static and it covers the middle
             // item. Otherwise, if the user starts editing the text via the
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
+            final float initialTextSizeOffset = 1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset;
             final Paint paint = new Paint(mSelectorWheelPaint);
-            paint.setTextSize(mSelectorWheelPaint.getTextSize() * (1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset));
+            final float textSize = mSelectorWheelPaint.getTextSize() * initialTextSizeOffset;
+            final float textSizeOffset = (1 - initialTextSizeOffset) * Math.abs(pullOffset);
+            final float decreasing = textSize - textSize * textSizeOffset;
+            final float increased = textSize + textSize * textSizeOffset;
+            if (pullOffset > 0) {
+                paint.setTextSize(i > mMiddleItemIndex ? decreasing : i < mMiddleItemIndex ? increased : textSize);
+            } else {
+                paint.setTextSize(i > mMiddleItemIndex ? increased : i < mMiddleItemIndex ? decreasing : textSize);
+            }
             if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
                 canvas.drawText(scrollSelectorValue, x, y, paint);
             }
