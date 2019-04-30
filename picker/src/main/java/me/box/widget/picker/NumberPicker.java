@@ -287,7 +287,7 @@ public class NumberPicker extends LinearLayout {
     /**
      * The selector indices whose value are show by the selector.
      */
-    private final int[] mSelectorIndices = new int[SELECTOR_WHEEL_ITEM_COUNT];
+    private final int[] mSelectorIndices;
 
     /**
      * The {@link Paint} for drawing the selector.
@@ -465,6 +465,10 @@ public class NumberPicker extends LinearLayout {
      * If true then the selector wheel is hidden until the picker has focus.
      */
     private boolean mHideWheelUntilFocused;
+
+    private int mWheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
+
+    private int mMiddleItemIndex = SELECTOR_MIDDLE_ITEM_INDEX;
 
     /**
      * Interface to listen for changes of the current value.
@@ -651,6 +655,15 @@ public class NumberPicker extends LinearLayout {
 
         mVirtualButtonPressedDrawable = attributesArray.getDrawable(
                 R.styleable.NumberPicker_virtualButtonPressedDrawable);
+
+        mWheelItemCount = attributesArray.getInteger(
+                R.styleable.NumberPicker_wheelItemCount, SELECTOR_WHEEL_ITEM_COUNT);
+        if (mWheelItemCount < SELECTOR_WHEEL_ITEM_COUNT || mWheelItemCount % 2 == 0) {
+            mWheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
+        }
+
+        mMiddleItemIndex = mWheelItemCount >> 1;
+        mSelectorIndices = new int[mWheelItemCount];
 
         attributesArray.recycle();
 
@@ -945,8 +958,7 @@ public class NumberPicker extends LinearLayout {
                             mPerformClickOnTap = false;
                             performClick();
                         } else {
-                            int selectorIndexOffset = (eventY / mSelectorElementHeight)
-                                    - SELECTOR_MIDDLE_ITEM_INDEX;
+                            int selectorIndexOffset = (eventY / mSelectorElementHeight) - mMiddleItemIndex;
                             if (selectorIndexOffset > 0) {
                                 changeValueByOne(true);
                                 mPressedStateHelper.buttonTapped(
@@ -1123,12 +1135,12 @@ public class NumberPicker extends LinearLayout {
         int[] selectorIndices = mSelectorIndices;
         int startScrollOffset = mCurrentScrollOffset;
         if (!mWrapSelectorWheel && y > 0
-                && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] <= mMinValue) {
+                && selectorIndices[mMiddleItemIndex] <= mMinValue) {
             mCurrentScrollOffset = mInitialScrollOffset;
             return;
         }
         if (!mWrapSelectorWheel && y < 0
-                && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] >= mMaxValue) {
+                && selectorIndices[mMiddleItemIndex] >= mMaxValue) {
             mCurrentScrollOffset = mInitialScrollOffset;
             return;
         }
@@ -1136,16 +1148,16 @@ public class NumberPicker extends LinearLayout {
         while (mCurrentScrollOffset - mInitialScrollOffset > mSelectorTextGapHeight) {
             mCurrentScrollOffset -= mSelectorElementHeight;
             decrementSelectorIndices(selectorIndices);
-            setValueInternal(selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX], true);
-            if (!mWrapSelectorWheel && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] <= mMinValue) {
+            setValueInternal(selectorIndices[mMiddleItemIndex], true);
+            if (!mWrapSelectorWheel && selectorIndices[mMiddleItemIndex] <= mMinValue) {
                 mCurrentScrollOffset = mInitialScrollOffset;
             }
         }
         while (mCurrentScrollOffset - mInitialScrollOffset < -mSelectorTextGapHeight) {
             mCurrentScrollOffset += mSelectorElementHeight;
             incrementSelectorIndices(selectorIndices);
-            setValueInternal(selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX], true);
-            if (!mWrapSelectorWheel && selectorIndices[SELECTOR_MIDDLE_ITEM_INDEX] >= mMaxValue) {
+            setValueInternal(selectorIndices[mMiddleItemIndex], true);
+            if (!mWrapSelectorWheel && selectorIndices[mMiddleItemIndex] >= mMaxValue) {
                 mCurrentScrollOffset = mInitialScrollOffset;
             }
         }
@@ -1610,8 +1622,8 @@ public class NumberPicker extends LinearLayout {
             // item. Otherwise, if the user starts editing the text via the
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
-            if ((showSelectorWheel && i != SELECTOR_MIDDLE_ITEM_INDEX) ||
-                    (i == SELECTOR_MIDDLE_ITEM_INDEX && mInputText.getVisibility() != VISIBLE)) {
+            if ((showSelectorWheel && i != mMiddleItemIndex) ||
+                    (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
                 canvas.drawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
             }
             y += mSelectorElementHeight;
@@ -1707,7 +1719,7 @@ public class NumberPicker extends LinearLayout {
         int[] selectorIndices = mSelectorIndices;
         int current = getValue();
         for (int i = 0; i < mSelectorIndices.length; i++) {
-            int selectorIndex = current + (i - SELECTOR_MIDDLE_ITEM_INDEX);
+            int selectorIndex = current + (i - mMiddleItemIndex);
             if (mWrapSelectorWheel) {
                 selectorIndex = getWrappedSelectorIndex(selectorIndex);
             }
@@ -1787,7 +1799,7 @@ public class NumberPicker extends LinearLayout {
         // mInputText
         int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
         mInitialScrollOffset = editTextTextPosition
-                - (mSelectorElementHeight * SELECTOR_MIDDLE_ITEM_INDEX);
+                - (mSelectorElementHeight * mMiddleItemIndex);
         mCurrentScrollOffset = mInitialScrollOffset;
         updateInputTextView();
     }

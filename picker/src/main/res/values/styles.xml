@@ -49,6 +49,7 @@
         <item name="internalMinWidth">64dip</item>
         <item name="internalMaxHeight">180dip</item>
         <item name="virtualButtonPressedDrawable">?attr/selectableItemBackground</item>
+        <item name="wheelItemCount">3</item>
     </style>
 
     <style name="Widget.DatePicker">
