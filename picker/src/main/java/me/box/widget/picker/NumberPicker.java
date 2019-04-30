@@ -466,9 +466,11 @@ public class NumberPicker extends LinearLayout {
      */
     private boolean mHideWheelUntilFocused;
 
-    private int mWheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
+    private final int mWheelItemCount;
 
-    private int mMiddleItemIndex = SELECTOR_MIDDLE_ITEM_INDEX;
+    private final int mMiddleItemIndex;
+
+    private final float mWheelItemOffset;
 
     /**
      * Interface to listen for changes of the current value.
@@ -656,14 +658,17 @@ public class NumberPicker extends LinearLayout {
         mVirtualButtonPressedDrawable = attributesArray.getDrawable(
                 R.styleable.NumberPicker_virtualButtonPressedDrawable);
 
-        mWheelItemCount = attributesArray.getInteger(
+        int wheelItemCount = attributesArray.getInteger(
                 R.styleable.NumberPicker_wheelItemCount, SELECTOR_WHEEL_ITEM_COUNT);
-        if (mWheelItemCount < SELECTOR_WHEEL_ITEM_COUNT || mWheelItemCount % 2 == 0) {
-            mWheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
+        if (wheelItemCount < SELECTOR_WHEEL_ITEM_COUNT || wheelItemCount % 2 == 0) {
+            wheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
         }
 
-        mMiddleItemIndex = mWheelItemCount >> 1;
-        mSelectorIndices = new int[mWheelItemCount];
+        mWheelItemCount = wheelItemCount;
+        mMiddleItemIndex = wheelItemCount >> 1;
+        mSelectorIndices = new int[wheelItemCount];
+
+        mWheelItemOffset = attributesArray.getFloat(R.styleable.NumberPicker_wheelItemOffset, 0.0f);
 
         attributesArray.recycle();
 
@@ -1622,9 +1627,10 @@ public class NumberPicker extends LinearLayout {
             // item. Otherwise, if the user starts editing the text via the
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
-            if ((showSelectorWheel && i != mMiddleItemIndex) ||
-                    (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
-                canvas.drawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
+            final Paint paint = new Paint(mSelectorWheelPaint);
+            paint.setTextSize(mSelectorWheelPaint.getTextSize() * (1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset));
+            if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
+                canvas.drawText(scrollSelectorValue, x, y, paint);
             }
             y += mSelectorElementHeight;
         }

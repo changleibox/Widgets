@@ -26,6 +26,7 @@
     <eat-comment/>
 
     <declare-styleable name="NumberPicker">
+        <attr name="wheelItemOffset" format="float"/>
         <attr name="wheelItemCount" format="integer"/>
         <!-- @hide Color for the solid color background if such for optimized rendering. -->
         <attr name="solidColor" format="color|reference"/>

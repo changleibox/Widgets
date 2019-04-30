@@ -15,6 +15,11 @@
         <item name="timePickerStyle">@style/AppTheme.TimePicker</item>
     </style>
 
+    <style name="TextAppearance.Large.Inverse.NumberPickerInputText" parent="TextAppearance.AppCompat.Large.Inverse">
+        <item name="android:textColor">#222</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="AppTheme.NumberPicker" parent="Widget.Material.NumberPicker">
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
@@ -22,6 +27,7 @@
         <item name="internalMaxHeight">220dp</item>
         <item name="selectionDividersDistance">40dp</item>
         <item name="internalMinWidth">60dp</item>
+        <item name="wheelItemOffset">0.1</item>
     </style>
 
     <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
