@@ -1,3 +1,7 @@
+/*
+ * Copyright © 2017 CHANGLEI. All rights reserved.
+ */
+
 package me.box.widget;
 
 import android.content.Context;
