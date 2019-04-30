@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2017 CHANGLEI. All rights reserved.
+  -->
+
+<resources>
+    <declare-styleable name="Theme">
+        <!-- ============== -->
+        <!-- Generic styles -->
+        <!-- ============== -->
+        <eat-comment/>
+
+        <!-- NumberPicker style. -->
+        <attr name="numberPickerStyle" format="reference"/>
+        <!-- The DatePicker style. -->
+        <attr name="datePickerStyle" format="reference"/>
+        <!-- The DatePicker dialog theme. -->
+        <attr name="datePickerDialogTheme" format="reference"/>
+    </declare-styleable>
+
+    <!-- ======================================= -->
+    <!-- Widget package parent layout attributes -->
+    <!-- ======================================= -->
+    <eat-comment/>
+
+    <declare-styleable name="DatePicker">
+        <!-- The first year (inclusive), for example "1940".
+             {@deprecated Use minDate instead.} -->
+        <attr name="startYear" format="integer"/>
+        <!-- The last year (inclusive), for example "2010".
+             {@deprecated Use maxDate instead.} -->
+        <attr name="endYear" format="integer"/>
+        <!--&lt;!&ndash; Whether the spinners are shown. &ndash;&gt;-->
+        <!--<attr name="spinnersShown" format="boolean" />-->
+        <!--&lt;!&ndash; Whether the calendar view is shown. &ndash;&gt;-->
+        <!--<attr name="calendarViewShown" format="boolean" />-->
+        <!-- The minimal date shown by this calendar view in mm/dd/yyyy format. -->
+        <attr name="minDate" format="string"/>
+        <!-- The maximal date shown by this calendar view in mm/dd/yyyy format. -->
+        <attr name="maxDate" format="string"/>
+        <!-- The first day of week according to {@link java.util.Calendar}. -->
+        <attr name="firstDayOfWeek"/>
+        <!--&lt;!&ndash; @hide The layout of the date picker. &ndash;&gt;-->
+        <!--<attr name="internalLayout"/>-->
+        <!-- @hide The layout of the legacy DatePicker. -->
+        <attr name="legacyLayout" format="reference"/>
+        <!--&lt;!&ndash; The background color for the date selector 's day of week. &ndash;&gt;-->
+        <!--<attr name="dayOfWeekBackground" format="color|reference" />-->
+        <!--&lt;!&ndash; The text color for the date selector's day of week. &ndash;&gt;-->
+        <!--<attr name="dayOfWeekTextAppearance" format="reference" />-->
+        <!--&lt;!&ndash; The month's text appearance in the date selector. &ndash;&gt;-->
+        <!--<attr name="headerMonthTextAppearance" format="reference" />-->
+        <!--&lt;!&ndash; The day of month's text appearance in the date selector. &ndash;&gt;-->
+        <!--<attr name="headerDayOfMonthTextAppearance" format="reference" />-->
+        <!--&lt;!&ndash; The year's text appearance in the date selector. &ndash;&gt;-->
+        <!--<attr name="headerYearTextAppearance" format="reference" />-->
+        <!--&lt;!&ndash; The background for the date selector. &ndash;&gt;-->
+        <!--<attr name="headerBackground" />-->
+        <!--&lt;!&ndash; @hide The selected text color for the date selector. Used as a-->
+        <!--backup if the text appearance does not explicitly have a color-->
+        <!--set for the selected state. &ndash;&gt;-->
+        <!--<attr name="headerSelectedTextColor" />-->
+        <!--&lt;!&ndash; The list year's text appearance in the list. &ndash;&gt;-->
+        <!--<attr name="yearListItemTextAppearance" format="reference" />-->
+        <!--&lt;!&ndash; The list year's selected circle color in the list. &ndash;&gt;-->
+        <!--<attr name="yearListSelectorColor" format="color" />-->
+        <!--&lt;!&ndash; The text color list of the calendar. &ndash;&gt;-->
+        <!--<attr name="calendarTextColor" format="color" />-->
+        <!--&lt;!&ndash; @hide The selected text color for the calendar. Used as a backup-->
+        <!--if the text color does not explicitly have a color set for the-->
+        <!--selected state. &ndash;&gt;-->
+        <!--<attr name="calendarSelectedTextColor" format="color" />-->
+        <!--&lt;!&ndash; Defines the look of the widget. Prior to the L release, the only choice was-->
+        <!--spinner. As of L, with the Material theme selected, the default layout is calendar,-->
+        <!--but this attribute can be used to force spinner to be used instead. &ndash;&gt;-->
+        <!--<attr name="datePickerMode">-->
+        <!--&lt;!&ndash; Date picker with spinner controls to select the date. &ndash;&gt;-->
+        <!--<enum name="spinner" value="1" />-->
+        <!--&lt;!&ndash; Date picker with calendar to select the date. &ndash;&gt;-->
+        <!--<enum name="calendar" value="2" />-->
+        <!--</attr>-->
+    </declare-styleable>
+
+    <declare-styleable name="NumberPicker">
+        <!-- @hide Color for the solid color background if such for optimized rendering. -->
+        <attr name="solidColor" format="color|reference"/>
+        <!-- @hide The divider for making the selection area. -->
+        <attr name="selectionDivider" format="reference"/>
+        <!-- @hide The height of the selection divider. -->
+        <attr name="selectionDividerHeight" format="dimension"/>
+        <!-- @hide The distance between the two selection dividers. -->
+        <attr name="selectionDividersDistance" format="dimension"/>
+        <!-- @hide The min height of the NumberPicker. -->
+        <attr name="internalMinHeight" format="dimension"/>
+        <!-- @hide The max height of the NumberPicker. -->
+        <attr name="internalMaxHeight" format="dimension"/>
+        <!-- @hide The min width of the NumberPicker. -->
+        <attr name="internalMinWidth" format="dimension"/>
+        <!-- @hide The max width of the NumberPicker. -->
+        <attr name="internalMaxWidth" format="dimension"/>
+        <!-- @hide The layout of the number picker. -->
+        <attr name="internalLayout" format="reference"/>
+        <!-- @hide The drawable for pressed virtual (increment/decrement) buttons. -->
+        <attr name="virtualButtonPressedDrawable" format="reference"/>
+        <!-- @hide If true then the selector wheel is hidden until the picker has focus. -->
+        <attr name="hideWheelUntilFocused" format="boolean"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,20 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="numberPickerStyle">@style/AppTheme.NumberPicker</item>
+        <item name="datePickerStyle">@style/AppTheme.DatePicker</item>
+    </style>
+
+    <style name="AppTheme.NumberPicker" parent="Widget.Material.NumberPicker">
+        <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
+    </style>
+
+    <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
+    </style>
+
+</resources>

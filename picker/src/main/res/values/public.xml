@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public name="TextAppearance.Large.Inverse.NumberPickerInputText" type="style"/>
+
+    <public name="TextAppearance.Material.NumberPicker" type="style"/>
+
+    <public name="Widget" type="style"/>
+
+    <public name="Widget.NumberPicker" type="style"/>
+
+    <public name="Widget.Material.NumberPicker" type="style"/>
+
+    <public name="Widget.DatePicker" type="style"/>
+
+    <public name="Widget.Material.DatePicker" type="style"/>
+</resources>

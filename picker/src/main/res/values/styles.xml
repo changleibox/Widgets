@@ -1,0 +1,80 @@
+<resources>
+
+    <style name="TextAppearance.Large.Inverse.NumberPickerInputText" parent="TextAppearance.AppCompat.Large.Inverse">
+        <item name="android:textColor">#222</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.Material.NumberPicker" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+
+    <!--<style name="TextAppearance.Material.DatePicker.DayOfWeekLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+
+    <!--<style name="TextAppearance.Material.DatePicker.MonthLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+
+    <!--<style name="TextAppearance.Material.DatePicker.DayOfMonthLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+
+    <!--<style name="TextAppearance.Material.DatePicker.YearLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+
+    <!--<style name="TextAppearance.Material.DatePicker.List.YearLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+
+    <style name="Widget">
+        <item name="android:textAppearance">?android:textAppearance</item>
+    </style>
+
+    <style name="Widget.NumberPicker">
+        <item name="internalLayout">@layout/number_picker_material</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:fadingEdge">vertical</item>
+        <item name="android:fadingEdgeLength">50dip</item>
+    </style>
+
+    <style name="Widget.Material.NumberPicker" parent="Widget.NumberPicker">
+        <item name="internalLayout">@layout/number_picker_with_selector_wheel</item>
+        <item name="solidColor">@android:color/transparent</item>
+        <item name="selectionDivider">@drawable/numberpicker_selection_divider</item>
+        <item name="selectionDividerHeight">2dip</item>
+        <item name="selectionDividersDistance">48dip</item>
+        <item name="internalMinWidth">64dip</item>
+        <item name="internalMaxHeight">180dip</item>
+        <item name="virtualButtonPressedDrawable">?attr/selectableItemBackground</item>
+    </style>
+
+    <!--<style name="Widget.TimePicker">-->
+    <!--<item name="timePickerMode">spinner</item>-->
+    <!--<item name="legacyLayout">@layout/time_picker_legacy</item>-->
+    <!--</style>-->
+
+    <style name="Widget.DatePicker">
+        <item name="legacyLayout">@layout/date_picker_legacy</item>
+    </style>
+
+    <style name="Widget.Material.DatePicker" parent="Widget.DatePicker">
+        <!--<item name="datePickerMode">calendar</item>-->
+        <item name="legacyLayout">@layout/date_picker_legacy_holo</item>
+        <!--&lt;!&ndash; Attributes for new-style DatePicker. &ndash;&gt;-->
+        <!--<item name="internalLayout">@layout/date_picker_holo</item>-->
+        <!--<item name="spinnersShown">false</item>-->
+        <!--<item name="calendarViewShown">true</item>-->
+        <!--<item name="dayOfWeekBackground">#10000000</item>-->
+        <!--<item name="dayOfWeekTextAppearance">-->
+        <!--@style/TextAppearance.Material.DatePicker.DayOfWeekLabel-->
+        <!--</item>-->
+        <!--<item name="headerMonthTextAppearance">-->
+        <!--@style/TextAppearance.Material.DatePicker.MonthLabel-->
+        <!--</item>-->
+        <!--<item name="headerDayOfMonthTextAppearance">-->
+        <!--@style/TextAppearance.Material.DatePicker.DayOfMonthLabel-->
+        <!--</item>-->
+        <!--<item name="headerYearTextAppearance">@style/TextAppearance.Material.DatePicker.YearLabel-->
+        <!--</item>-->
+        <!--<item name="headerSelectedTextColor">?attr/colorPrimary</item>-->
+        <!--<item name="headerBackground">?attr/colorAccent</item>-->
+        <!--<item name="yearListItemTextAppearance">-->
+        <!--@style/TextAppearance.Material.DatePicker.List.YearLabel-->
+        <!--</item>-->
+        <!--<item name="yearListSelectorColor">?attr/colorControlActivated</item>-->
+        <!--<item name="calendarTextColor">?android:attr/textColorSecondary</item>-->
+        <!--<item name="calendarSelectedTextColor">?attr/colorControlActivated</item>-->
+    </style>
+
+</resources>
