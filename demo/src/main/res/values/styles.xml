@@ -12,6 +12,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="numberPickerStyle">@style/AppTheme.NumberPicker</item>
         <item name="datePickerStyle">@style/AppTheme.DatePicker</item>
+        <item name="timePickerStyle">@style/AppTheme.TimePicker</item>
     </style>
 
     <style name="AppTheme.NumberPicker" parent="Widget.Material.NumberPicker">
@@ -21,6 +22,10 @@
 
     <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
         <item name="legacyLayout">@layout/layout_date_picker_legacy_holo</item>
+    </style>
+
+    <style name="AppTheme.TimePicker" parent="Widget.Material.TimePicker">
+        <item name="legacyLayout">@layout/layout_time_picker_legacy_holo</item>
     </style>
 
 </resources>

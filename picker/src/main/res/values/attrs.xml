@@ -16,12 +16,39 @@
         <attr name="datePickerStyle" format="reference"/>
         <!-- The DatePicker dialog theme. -->
         <attr name="datePickerDialogTheme" format="reference"/>
+        <!-- The TimePicker style. -->
+        <attr name="timePickerStyle" format="reference"/>
     </declare-styleable>
 
     <!-- ======================================= -->
     <!-- Widget package parent layout attributes -->
     <!-- ======================================= -->
     <eat-comment/>
+
+    <declare-styleable name="NumberPicker">
+        <!-- @hide Color for the solid color background if such for optimized rendering. -->
+        <attr name="solidColor" format="color|reference"/>
+        <!-- @hide The divider for making the selection area. -->
+        <attr name="selectionDivider" format="reference"/>
+        <!-- @hide The height of the selection divider. -->
+        <attr name="selectionDividerHeight" format="dimension"/>
+        <!-- @hide The distance between the two selection dividers. -->
+        <attr name="selectionDividersDistance" format="dimension"/>
+        <!-- @hide The min height of the NumberPicker. -->
+        <attr name="internalMinHeight" format="dimension"/>
+        <!-- @hide The max height of the NumberPicker. -->
+        <attr name="internalMaxHeight" format="dimension"/>
+        <!-- @hide The min width of the NumberPicker. -->
+        <attr name="internalMinWidth" format="dimension"/>
+        <!-- @hide The max width of the NumberPicker. -->
+        <attr name="internalMaxWidth" format="dimension"/>
+        <!-- @hide The layout of the number picker. -->
+        <attr name="internalLayout" format="reference"/>
+        <!-- @hide The drawable for pressed virtual (increment/decrement) buttons. -->
+        <attr name="virtualButtonPressedDrawable" format="reference"/>
+        <!-- @hide If true then the selector wheel is hidden until the picker has focus. -->
+        <attr name="hideWheelUntilFocused" format="boolean"/>
+    </declare-styleable>
 
     <declare-styleable name="DatePicker">
         <!-- The first year (inclusive), for example "1940".
@@ -81,28 +108,58 @@
         <!--</attr>-->
     </declare-styleable>
 
-    <declare-styleable name="NumberPicker">
-        <!-- @hide Color for the solid color background if such for optimized rendering. -->
-        <attr name="solidColor" format="color|reference"/>
-        <!-- @hide The divider for making the selection area. -->
-        <attr name="selectionDivider" format="reference"/>
-        <!-- @hide The height of the selection divider. -->
-        <attr name="selectionDividerHeight" format="dimension"/>
-        <!-- @hide The distance between the two selection dividers. -->
-        <attr name="selectionDividersDistance" format="dimension"/>
-        <!-- @hide The min height of the NumberPicker. -->
-        <attr name="internalMinHeight" format="dimension"/>
-        <!-- @hide The max height of the NumberPicker. -->
-        <attr name="internalMaxHeight" format="dimension"/>
-        <!-- @hide The min width of the NumberPicker. -->
-        <attr name="internalMinWidth" format="dimension"/>
-        <!-- @hide The max width of the NumberPicker. -->
-        <attr name="internalMaxWidth" format="dimension"/>
-        <!-- @hide The layout of the number picker. -->
-        <attr name="internalLayout" format="reference"/>
-        <!-- @hide The drawable for pressed virtual (increment/decrement) buttons. -->
-        <attr name="virtualButtonPressedDrawable" format="reference"/>
-        <!-- @hide If true then the selector wheel is hidden until the picker has focus. -->
-        <attr name="hideWheelUntilFocused" format="boolean"/>
+    <declare-styleable name="TimePicker">
+        <!-- @hide The layout of the legacy time picker. -->
+        <attr name="legacyLayout"/>
+        <!--&lt;!&ndash; @hide The layout of the time picker. &ndash;&gt;-->
+        <!--<attr name="internalLayout"/>-->
+
+        <!--&lt;!&ndash; The text color for the selected time header text, ex. "12" or-->
+        <!--"PM". This should be a color state list where the activated state-->
+        <!--will be used when the minute picker or hour picker is active.&ndash;&gt;-->
+        <!--<attr name="headerTextColor"/>-->
+        <!--&lt;!&ndash; The background for the header containing the currently selected time. &ndash;&gt;-->
+        <!--<attr name="headerBackground"/>-->
+
+        <!-- The color for the hours/minutes numbers. This should be a color
+             state list where the activated state will be used when the number
+             is active.-->
+        <attr name="numbersTextColor" format="color"/>
+        <!-- The color for the inner hours numbers used in 24-hour mode. This
+             should be a color state list where the activated state will be
+             used when the number is active.-->
+        <attr name="numbersInnerTextColor" format="color"/>
+        <!-- The background color for the hours/minutes numbers. -->
+        <attr name="numbersBackgroundColor" format="color"/>
+        <!-- The color for the hours/minutes selector. -->
+        <attr name="numbersSelectorColor" format="color"/>
+
+        <!--&lt;!&ndash; Defines the look of the widget. Prior to the L release, the only choice was-->
+        <!--spinner. As of L, with the Material theme selected, the default layout is clock,-->
+        <!--but this attribute can be used to force spinner to be used instead. &ndash;&gt;-->
+        <!--<attr name="timePickerMode">-->
+        <!--&lt;!&ndash; Time picker with spinner controls to select the time. &ndash;&gt;-->
+        <!--<enum name="spinner" value="1"/>-->
+        <!--&lt;!&ndash; Time picker with clock face to select the time. &ndash;&gt;-->
+        <!--<enum name="clock" value="2"/>-->
+        <!--</attr>-->
+
+        <!--&lt;!&ndash; The text appearance for the AM/PM header.-->
+        <!--@deprecated Use headerTextColor instead. &ndash;&gt;-->
+        <!--<attr name="headerAmPmTextAppearance" format="reference"/>-->
+        <!--&lt;!&ndash; The text appearance for the time header.-->
+        <!--@deprecated Use headerTextColor instead. &ndash;&gt;-->
+        <!--<attr name="headerTimeTextAppearance" format="reference"/>-->
+        <!-- The color for the AM/PM selectors.
+             {@deprecated Use headerTextColor instead.}-->
+        <attr name="amPmTextColor" format="color"/>
+        <!-- The background color state list for the AM/PM selectors.
+             {@deprecated Use headerBackground instead.}-->
+        <attr name="amPmBackgroundColor" format="color"/>
+
+        <!--&lt;!&ndash; @hide Whether this time picker is being displayed within a dialog,-->
+        <!--in which case it may ignore the requested time picker mode due to-->
+        <!--space considerations. &ndash;&gt;-->
+        <!--<attr name="dialogMode"/>-->
     </declare-styleable>
 </resources>

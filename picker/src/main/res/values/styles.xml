@@ -1,3 +1,7 @@
+<!--
+  ~ Copyright © 2017 CHANGLEI. All rights reserved.
+  -->
+
 <resources>
 
     <style name="TextAppearance.Large.Inverse.NumberPickerInputText" parent="TextAppearance.AppCompat.Large.Inverse">
@@ -6,6 +10,14 @@
     </style>
 
     <style name="TextAppearance.Material.NumberPicker" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+
+    <style name="TextAppearance.Material.TimePicker.InputField" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+
+    <style name="TextAppearance.Material.TimePicker.PromptLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+
+    <style name="TextAppearance.Material.TimePicker.TimeLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+
+    <style name="TextAppearance.Material.TimePicker.AmPmLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
 
     <!--<style name="TextAppearance.Material.DatePicker.DayOfWeekLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
 
@@ -39,11 +51,6 @@
         <item name="virtualButtonPressedDrawable">?attr/selectableItemBackground</item>
     </style>
 
-    <!--<style name="Widget.TimePicker">-->
-    <!--<item name="timePickerMode">spinner</item>-->
-    <!--<item name="legacyLayout">@layout/time_picker_legacy</item>-->
-    <!--</style>-->
-
     <style name="Widget.DatePicker">
         <item name="legacyLayout">@layout/date_picker_legacy</item>
     </style>
@@ -75,6 +82,24 @@
         <!--<item name="yearListSelectorColor">?attr/colorControlActivated</item>-->
         <!--<item name="calendarTextColor">?android:attr/textColorSecondary</item>-->
         <!--<item name="calendarSelectedTextColor">?attr/colorControlActivated</item>-->
+    </style>
+
+    <style name="Widget.TimePicker">
+        <!--<item name="timePickerMode">spinner</item>-->
+        <item name="legacyLayout">@layout/time_picker_legacy</item>
+    </style>
+
+    <style name="Widget.Material.TimePicker" parent="Widget.TimePicker">
+        <!--<item name="timePickerMode">spinner</item>-->
+        <item name="legacyLayout">@layout/time_picker_legacy_holo</item>
+        <!-- Attributes for new-style TimePicker. -->
+        <!--<item name="headerTimeTextAppearance">@style/TextAppearance.Material.TimePicker.TimeLabel</item>-->
+        <!--<item name="headerAmPmTextAppearance">@style/TextAppearance.Material.TimePicker.AmPmLabel</item>-->
+        <item name="numbersTextColor">?android:attr/textColorSecondary</item>
+        <item name="numbersBackgroundColor">#10ffffff</item>
+        <item name="amPmTextColor">?android:attr/textColorSecondary</item>
+        <item name="amPmBackgroundColor">@android:color/transparent</item>
+        <item name="numbersSelectorColor">?attr/colorControlActivated</item>
     </style>
 
 </resources>

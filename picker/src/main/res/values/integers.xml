@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2017 CHANGLEI. All rights reserved.
+  -->
+
+<resources>
+    <integer name="time_picker_mode">1</integer>
+
+    <!-- Specifies time picker mode to be 'clock' -->
+    <integer name="time_picker_mode_material">2</integer>
+</resources>
