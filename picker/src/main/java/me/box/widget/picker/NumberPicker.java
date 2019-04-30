@@ -2783,8 +2783,7 @@ public class NumberPicker extends LinearLayout {
             return info;
         }
 
-        private AccessibilityNodeInfo createAccessibilityNodeInfoForNumberPicker(int left, int top,
-                                                                                 int right, int bottom) {
+        private AccessibilityNodeInfo createAccessibilityNodeInfoForNumberPicker(int left, int top, int right, int bottom) {
             AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
             info.setClassName(NumberPicker.class.getName());
             info.setPackageName(getContext().getPackageName());
