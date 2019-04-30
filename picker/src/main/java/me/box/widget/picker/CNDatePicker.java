@@ -54,7 +54,7 @@ public class CNDatePicker extends DatePicker {
     }
 
     @Override
-    protected DatePickerDelegate createSpinnerUIDelegate(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    DatePickerDelegate createSpinnerUIDelegate(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         return new CNDatePickerSpinnerDelegate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 }
