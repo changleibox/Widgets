@@ -16,9 +16,11 @@
 
     <style name="AppTheme.NumberPicker" parent="Widget.Material.NumberPicker">
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
+        <item name="selectionDividerHeight">1dp</item>
     </style>
 
     <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
+        <item name="legacyLayout">@layout/layout_date_picker_legacy_holo</item>
     </style>
 
 </resources>
