@@ -132,8 +132,7 @@ public class TimePicker extends FrameLayout {
             case MODE_CLOCK:
             case MODE_SPINNER:
             default:
-                mDelegate = new TimePickerSpinnerDelegate(
-                        this, context, attrs, defStyleAttr, defStyleRes);
+                mDelegate = createSpinnerUIDelegate(context, attrs, defStyleAttr, defStyleRes);
                 break;
         }
         mDelegate.setAutoFillChangeListener(new OnTimeChangedListener() {
@@ -147,6 +146,10 @@ public class TimePicker extends FrameLayout {
                 }
             }
         });
+    }
+
+    TimePickerDelegate createSpinnerUIDelegate(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        return new TimePickerSpinnerDelegate(this, context, attrs, defStyleAttr, defStyleRes);
     }
 
     /**

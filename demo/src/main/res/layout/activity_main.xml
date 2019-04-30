@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <me.box.widget.picker.TimePicker
+        <me.box.widget.picker.CNTimePicker
             android:id="@+id/time_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

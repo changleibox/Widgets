@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        timePicker.setIs24HourView(true);
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
