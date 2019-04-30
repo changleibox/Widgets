@@ -80,6 +80,27 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
 
     private boolean mIsEnabled = DEFAULT_ENABLED_STATE;
 
+    private static final NumberPicker.Formatter sDayFormatter = new NumberPicker.Formatter() {
+        @Override
+        public String format(int value) {
+            return String.format("%s日", NumberPicker.getTwoDigitFormatter().format(value));
+        }
+    };
+
+    private static final NumberPicker.Formatter sMonthFormatter = new NumberPicker.Formatter() {
+        @Override
+        public String format(int value) {
+            return String.format("%s月", NumberPicker.getTwoDigitFormatter().format(value));
+        }
+    };
+
+    private static final NumberPicker.Formatter sYearFormatter = new NumberPicker.Formatter() {
+        @Override
+        public String format(int value) {
+            return String.format("%d年", value);
+        }
+    };
+
     CNDatePickerSpinnerDelegate(DatePicker delegator, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(delegator, context);
 
@@ -134,8 +155,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
                     throw new IllegalArgumentException();
                 }
                 // now set the date to the adjusted one
-                setDate(mTempDate.get(Calendar.YEAR), mTempDate.get(Calendar.MONTH),
-                        mTempDate.get(Calendar.DAY_OF_MONTH));
+                setDate(mTempDate.get(Calendar.YEAR), mTempDate.get(Calendar.MONTH), mTempDate.get(Calendar.DAY_OF_MONTH));
                 updateSpinners();
                 updateCalendarView();
                 notifyDateChanged();
@@ -158,13 +178,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
 
         // day
         mDaySpinner = (NumberPicker) mDelegator.findViewById(R.id.day);
-        mDaySpinner.setFormatter(NumberPicker.getTwoDigitFormatter());
-        mDaySpinner.setFormatter(new NumberPicker.Formatter() {
-            @Override
-            public String format(int value) {
-                return String.format("%s日", NumberPicker.getTwoDigitFormatter().format(value));
-            }
-        });
+        mDaySpinner.setFormatter(sDayFormatter);
         mDaySpinner.setOnLongPressUpdateInterval(100);
         mDaySpinner.setOnValueChangedListener(onChangeListener);
         mDaySpinnerInput = (EditText) mDaySpinner.findViewById(numberpickerInputId);
@@ -172,12 +186,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
 
         // month
         mMonthSpinner = (NumberPicker) mDelegator.findViewById(R.id.month);
-        mMonthSpinner.setFormatter(new NumberPicker.Formatter() {
-            @Override
-            public String format(int value) {
-                return String.format("%s月", NumberPicker.getTwoDigitFormatter().format(value));
-            }
-        });
+        mMonthSpinner.setFormatter(sMonthFormatter);
         mMonthSpinner.setMinValue(0);
         mMonthSpinner.setMaxValue(mNumberOfMonths - 1);
         mMonthSpinner.setDisplayedValues(mShortMonths);
@@ -188,12 +197,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
 
         // year
         mYearSpinner = (NumberPicker) mDelegator.findViewById(R.id.year);
-        mYearSpinner.setFormatter(new NumberPicker.Formatter() {
-            @Override
-            public String format(int value) {
-                return String.format("%d年", value);
-            }
-        });
+        mYearSpinner.setFormatter(sYearFormatter);
         mYearSpinner.setOnLongPressUpdateInterval(100);
         mYearSpinner.setOnValueChangedListener(onChangeListener);
         mYearSpinnerInput = (EditText) mYearSpinner.findViewById(numberpickerInputId);
@@ -428,7 +432,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
             // All-text would require custom NumberPicker formatters for day and year.
             mShortMonths = new String[mNumberOfMonths];
             for (int i = 0; i < mNumberOfMonths; ++i) {
-                mShortMonths[i] = String.format("%s月", NumberPicker.getTwoDigitFormatter().format(i + 1));
+                mShortMonths[i] = sMonthFormatter.format(i + 1);
             }
         }
     }
