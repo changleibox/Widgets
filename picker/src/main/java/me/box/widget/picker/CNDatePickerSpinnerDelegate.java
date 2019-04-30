@@ -36,7 +36,7 @@ import me.box.widget.picker.NumberPicker.OnValueChangeListener;
  * A delegate implementing the basic DatePicker
  */
 @SuppressWarnings("all")
-class CNDatePickerSpinnerDelegate extends CNDatePicker.AbstractDatePickerDelegate {
+class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate {
 
     private static final String DATE_FORMAT = "MM/dd/yyyy";
 
@@ -80,8 +80,7 @@ class CNDatePickerSpinnerDelegate extends CNDatePicker.AbstractDatePickerDelegat
 
     private boolean mIsEnabled = DEFAULT_ENABLED_STATE;
 
-    CNDatePickerSpinnerDelegate(CNDatePicker delegator, Context context, AttributeSet attrs,
-                                int defStyleAttr, int defStyleRes) {
+    CNDatePickerSpinnerDelegate(DatePicker delegator, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(delegator, context);
 
         mDelegator = delegator;
@@ -249,8 +248,7 @@ class CNDatePickerSpinnerDelegate extends CNDatePicker.AbstractDatePickerDelegat
     }
 
     @Override
-    public void init(int year, int monthOfYear, int dayOfMonth,
-                     CNDatePicker.OnDateChangedListener onDateChangedListener) {
+    public void init(int year, int monthOfYear, int dayOfMonth, DatePicker.OnDateChangedListener onDateChangedListener) {
         setDate(year, monthOfYear, dayOfMonth);
         updateSpinners();
         updateCalendarView();
@@ -430,7 +428,7 @@ class CNDatePickerSpinnerDelegate extends CNDatePicker.AbstractDatePickerDelegat
             // All-text would require custom NumberPicker formatters for day and year.
             mShortMonths = new String[mNumberOfMonths];
             for (int i = 0; i < mNumberOfMonths; ++i) {
-                mShortMonths[i] = String.format("%d月", i + 1);
+                mShortMonths[i] = String.format("%s月", NumberPicker.getTwoDigitFormatter().format(i + 1));
             }
         }
     }
