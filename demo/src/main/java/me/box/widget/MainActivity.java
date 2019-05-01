@@ -7,7 +7,6 @@ package me.box.widget;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final NumberPicker picker1 = findViewById(R.id.picker1);
+        final PickerView picker1 = findViewById(R.id.picker1);
         final PickerView picker2 = findViewById(R.id.picker2);
 
         final String[] values = new String[22];
