@@ -277,11 +277,6 @@ public class PickerView extends LinearLayout {
     private final Paint mSelectorWheelPaint;
 
     /**
-     * The {@link Drawable} for pressed virtual (increment/decrement) buttons.
-     */
-    private final Drawable mVirtualButtonPressedDrawable;
-
-    /**
      * The height of a selector element (text + gap).
      */
     private int mSelectorElementHeight;
@@ -438,11 +433,6 @@ public class PickerView extends LinearLayout {
      */
     private int mLastHandledDownDpadKeyCode = -1;
 
-    /**
-     * If true then the selector wheel is hidden until the picker has focus.
-     */
-    private boolean mHideWheelUntilFocused;
-
     private final int mMiddleItemIndex;
 
     private final float mWheelItemOffset;
@@ -574,9 +564,6 @@ public class PickerView extends LinearLayout {
         final int layoutResId = attributesArray.getResourceId(
                 R.styleable.PickerView_internalLayout, DEFAULT_LAYOUT_RESOURCE_ID);
 
-        mHideWheelUntilFocused = attributesArray.getBoolean(
-                R.styleable.PickerView_hideWheelUntilFocused, false);
-
         mSolidColor = attributesArray.getColor(R.styleable.PickerView_solidColor, 0);
 
         final Drawable selectionDivider = attributesArray.getDrawable(
@@ -625,9 +612,6 @@ public class PickerView extends LinearLayout {
         }
 
         mComputeMaxWidth = (mMaxWidth == SIZE_UNSPECIFIED);
-
-        mVirtualButtonPressedDrawable = attributesArray.getDrawable(
-                R.styleable.PickerView_virtualButtonPressedDrawable);
 
         int wheelItemCount = attributesArray.getInteger(
                 R.styleable.PickerView_wheelItemCount, SELECTOR_WHEEL_ITEM_COUNT);
@@ -1448,28 +1432,8 @@ public class PickerView extends LinearLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         // camera.applyToCanvas(canvas);
-        final boolean showSelectorWheel = !mHideWheelUntilFocused || hasFocus();
         float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
-
-        // draw the virtual buttons pressed state if needed
-        if (showSelectorWheel && mVirtualButtonPressedDrawable != null
-                && mScrollState == OnScrollListener.SCROLL_STATE_IDLE) {
-            if (mDecrementVirtualButtonPressed) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
-                }
-                mVirtualButtonPressedDrawable.setBounds(0, 0, getRight(), mTopSelectionDividerTop);
-                mVirtualButtonPressedDrawable.draw(canvas);
-            }
-            if (mIncrementVirtualButtonPressed) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
-                }
-                mVirtualButtonPressedDrawable.setBounds(0, mBottomSelectionDividerBottom, getRight(), getBottom());
-                mVirtualButtonPressedDrawable.draw(canvas);
-            }
-        }
 
         final float currentScrollOffset = mCurrentScrollOffset;
         final float initialScrollOffset = mInitialScrollOffset;
@@ -1511,17 +1475,15 @@ public class PickerView extends LinearLayout {
             // camera.getMatrix(matrix);
             // camera.restore();
 
-            if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
-                // canvas.save();
-                // canvas.setMatrix(matrix);
-                canvas.drawText(scrollSelectorValue, x, y, paint);
-                // canvas.restore();
-            }
+            // canvas.save();
+            // canvas.setMatrix(matrix);
+            canvas.drawText(scrollSelectorValue, x, y, paint);
+            // canvas.restore();
             y += mSelectorElementHeight;
         }
 
         // draw the selection dividers
-        if (showSelectorWheel && mSelectionDivider != null) {
+        if (mSelectionDivider != null) {
             // draw the top divider
             int topOfTopDivider = mTopSelectionDividerTop;
             int bottomOfTopDivider = topOfTopDivider + mSelectionDividerHeight;

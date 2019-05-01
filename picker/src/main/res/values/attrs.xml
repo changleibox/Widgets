@@ -192,9 +192,5 @@
         <attr name="internalMaxWidth"/>
         <!-- @hide The layout of the PickerView. -->
         <attr name="internalLayout"/>
-        <!-- @hide The drawable for pressed virtual (increment/decrement) buttons. -->
-        <attr name="virtualButtonPressedDrawable"/>
-        <!-- @hide If true then the selector wheel is hidden until the picker has focus. -->
-        <attr name="hideWheelUntilFocused"/>
     </declare-styleable>
 </resources>

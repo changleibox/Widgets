@@ -45,7 +45,6 @@
     </style>
 
     <style name="AppTheme.PickerView" parent="Widget.Material.PickerView">
-        <item name="internalLayout">@layout/picker_view_material</item>
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
         <item name="wheelItemCount">5</item>
