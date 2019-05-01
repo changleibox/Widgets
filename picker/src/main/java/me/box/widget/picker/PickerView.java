@@ -619,8 +619,8 @@ public class PickerView extends LinearLayout {
             wheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
         }
 
-        mMiddleItemIndex = wheelItemCount >> 1;
         mSelectorIndices = new int[wheelItemCount];
+        mMiddleItemIndex = mSelectorIndices.length >> 1;
 
         mWheelItemOffset = attributesArray.getFloat(R.styleable.PickerView_wheelItemOffset, 0.0f);
 
