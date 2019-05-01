@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -1599,8 +1600,11 @@ public class PickerView extends LinearLayout {
         }
     }
 
+    private Camera camera = new Camera();
+
     @Override
     protected void onDraw(Canvas canvas) {
+        // camera.applyToCanvas(canvas);
         if (!mHasSelectorWheel) {
             super.onDraw(canvas);
             return;
@@ -1645,11 +1649,30 @@ public class PickerView extends LinearLayout {
             final float increased = textSize + textSize * textSizeOffset;
             if (pullOffset > 0) {
                 paint.setTextSize(i > mMiddleItemIndex ? decreasing : i < mMiddleItemIndex ? increased : textSize);
-            } else {
+            } else if (pullOffset < 0) {
                 paint.setTextSize(i > mMiddleItemIndex ? increased : i < mMiddleItemIndex ? decreasing : textSize);
+            } else {
+                paint.setTextSize(textSize);
             }
+
+            // Matrix matrix = new Matrix();
+            //
+            // camera.save();
+            // float deg = 360.0f / 50;
+            // if (i < mMiddleItemIndex) {
+            //     camera.rotateX(-(i - mMiddleItemIndex) * deg);
+            // } else if (i > mMiddleItemIndex) {
+            //     camera.rotateX(360 - (i - mMiddleItemIndex) * deg);
+            // }
+            // // camera.translate(0, -mTextSize / 2, 0);
+            // camera.getMatrix(matrix);
+            // camera.restore();
+
             if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
-                canvas.drawText(scrollSelectorValue, x, y, paint);
+                // canvas.save();
+                // canvas.setMatrix(matrix);
+                canvas.drawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
+                // canvas.restore();
             }
             y += mSelectorElementHeight;
         }

@@ -16,24 +16,24 @@
         <item name="pickerViewStyle">@style/AppTheme.PickerView</item>
     </style>
 
-    <style name="TextAppearance.Material.NumberPicker." parent="TextAppearance.Large.Inverse.NumberPickerInputText">
+    <style name="TextAppearance.Material.NumberPicker" parent="TextAppearance.Large.Inverse.NumberPickerInputText">
         <item name="android:textColor">#222</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">24sp</item>
     </style>
 
     <style name="TextAppearance.Material.PickerView" parent="TextAppearance.Large.Inverse.PickerViewInputText">
         <item name="android:textColor">#222</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="AppTheme.NumberPicker" parent="Widget.Material.NumberPicker">
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
         <item name="wheelItemCount">5</item>
-        <item name="internalMaxHeight">200dp</item>
-        <item name="selectionDividersDistance">40dp</item>
+        <item name="internalMaxHeight">180dp</item>
+        <item name="selectionDividersDistance">30dp</item>
         <item name="internalMinWidth">70dp</item>
-        <item name="wheelItemOffset">0.01</item>
+        <item name="wheelItemOffset">0.1</item>
     </style>
 
     <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
@@ -48,10 +48,10 @@
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
         <item name="wheelItemCount">5</item>
-        <item name="internalMaxHeight">200dp</item>
-        <item name="selectionDividersDistance">40dp</item>
+        <item name="internalMaxHeight">180dp</item>
+        <item name="selectionDividersDistance">30dp</item>
         <item name="internalMinWidth">70dp</item>
-        <item name="wheelItemOffset">0.01</item>
+        <item name="wheelItemOffset">0.1</item>
     </style>
 
 </resources>

@@ -14,23 +14,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#222"
-        android:textSize="16sp"/>
+        android:textSize="24sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@android:color/holo_blue_bright"
         android:gravity="center"
         android:orientation="horizontal">
 
-        <me.box.widget.picker.PickerView
+        <me.box.widget.picker.CNDatePicker
             android:id="@+id/date_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <me.box.widget.picker.PickerView
+        <me.box.widget.picker.CNTimePicker
             android:id="@+id/time_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/holo_blue_bright"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <me.box.widget.picker.PickerView
+            android:id="@+id/picker1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"/>
+
+        <me.box.widget.picker.PickerView
+            android:id="@+id/picker2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
