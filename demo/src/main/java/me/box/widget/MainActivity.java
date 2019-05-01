@@ -4,10 +4,14 @@
 
 package me.box.widget;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,11 +30,27 @@ public class MainActivity extends AppCompatActivity {
 
     private final Calendar mCurrentDate = Calendar.getInstance();
     private final SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm", Locale.getDefault());
+    private int[] colors = new int[]{Color.RED, Color.GREEN, Color.BLUE, Color.GRAY};
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final Custom3DView custom3DView = findViewById(R.id.activity_myview_customview);
+        custom3DView.removeAllViewsInLayout();
+        for (int i = 0; i < colors.length; i++) {
+            ImageView imageView = new ImageView(this);
+            imageView.setBackgroundColor(colors[i]);
+            final int position = i;
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(MainActivity.this, "点击了第" + (position + 1) + "张图片！", Toast.LENGTH_SHORT).show();
+                }
+            });
+            custom3DView.addView(imageView);
+        }
 
         final PickerView picker1 = findViewById(R.id.picker1);
         final PickerView picker2 = findViewById(R.id.picker2);

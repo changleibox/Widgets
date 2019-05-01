@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
@@ -1411,8 +1413,12 @@ public class PickerView extends LinearLayout {
         }
     }
 
+    private final Camera mCamera = new Camera();
+    private final Matrix mMatrix = new Matrix();
+
     @Override
     protected void onDraw(Canvas canvas) {
+        mCamera.applyToCanvas(canvas);
         final float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
 
@@ -1433,15 +1439,28 @@ public class PickerView extends LinearLayout {
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
             final float centerY = y - offsetY;
-            if (centerY > middleItemY) {
-                final float scale = (measuredHeight - centerY) / middleItemY;
-                paint.setTextSize(mTextSize * scale);
+            float scale = 0.f;
+            float degree = 0.f;
+            if (centerY <= middleItemY) {
+                scale = centerY / middleItemY;
+                degree = 90 * (1.f - scale);
             } else {
-                final float scale = centerY / middleItemY;
-                paint.setTextSize(mTextSize * scale);
+                scale = (measuredHeight - centerY) / middleItemY;
+                degree = -90 * (1.f - scale);
             }
 
+            canvas.save();
+            mCamera.save();
+            mCamera.rotateX(degree);
+            mCamera.getMatrix(mMatrix);
+            mMatrix.preTranslate(-x, -centerY);
+            mMatrix.postTranslate(x, centerY);
+            mMatrix.postScale(scale, 1.0f, x, centerY);
+            mCamera.restore();
+
+            canvas.concat(mMatrix);
             canvas.drawText(scrollSelectorValue, x, y, paint);
+            canvas.restore();
             y += mSelectorElementHeight;
         }
 

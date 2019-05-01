@@ -9,6 +9,14 @@
               android:gravity="center"
               android:orientation="vertical">
 
+    <me.box.widget.Custom3DView
+        android:id="@+id/activity_myview_customview"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="wrap_content"
