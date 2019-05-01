@@ -23,7 +23,7 @@
 
     <style name="TextAppearance.Material.PickerView" parent="TextAppearance.Large.Inverse.PickerViewInputText">
         <item name="android:textColor">#222</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">30sp</item>
     </style>
 
     <style name="AppTheme.NumberPicker" parent="Widget.Material.NumberPicker">
