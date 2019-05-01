@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -605,10 +604,8 @@ public class PickerView extends LinearLayout {
         mMinWidth = attributesArray.getDimensionPixelSize(
                 R.styleable.PickerView_internalMinWidth, SIZE_UNSPECIFIED);
 
-        mMaxWidth = attributesArray.getDimensionPixelSize(
-                R.styleable.PickerView_internalMaxWidth, SIZE_UNSPECIFIED);
-        if (mMinWidth != SIZE_UNSPECIFIED && mMaxWidth != SIZE_UNSPECIFIED
-                && mMinWidth > mMaxWidth) {
+        mMaxWidth = attributesArray.getDimensionPixelSize(R.styleable.PickerView_internalMaxWidth, SIZE_UNSPECIFIED);
+        if (mMinWidth != SIZE_UNSPECIFIED && mMaxWidth != SIZE_UNSPECIFIED && mMinWidth > mMaxWidth) {
             throw new IllegalArgumentException("minWidth > maxWidth");
         }
 
@@ -1414,20 +1411,19 @@ public class PickerView extends LinearLayout {
         }
     }
 
-    private Camera camera = new Camera();
-
     @Override
     protected void onDraw(Canvas canvas) {
-        // camera.applyToCanvas(canvas);
         final float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
 
         final float currentScrollOffset = mCurrentScrollOffset;
         final float initialScrollOffset = mInitialScrollOffset;
-        final float pullOffset = (currentScrollOffset - initialScrollOffset) / initialScrollOffset;
         // draw the selector wheel
         final int[] selectorIndices = mSelectorIndices;
         final Paint paint = new Paint(mSelectorWheelPaint);
+        final float measuredHeight = getMeasuredHeight();
+        final float middleItemY = measuredHeight / 2.f;
+        final float offsetY = mMiddleItemIndex * mSelectorElementHeight + initialScrollOffset - middleItemY;
         for (int i = 0; i < selectorIndices.length; i++) {
             final int selectorIndex = selectorIndices[i];
             final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
@@ -1436,36 +1432,16 @@ public class PickerView extends LinearLayout {
             // item. Otherwise, if the user starts editing the text via the
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
-            final float initialTextSizeOffset = 1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset;
-            final float textSize = mSelectorWheelPaint.getTextSize() * initialTextSizeOffset;
-            final float textSizeOffset = (1.0f - initialTextSizeOffset) * Math.abs(pullOffset);
-            final float decreasing = textSize - textSize * textSizeOffset;
-            final float increased = textSize + textSize * textSizeOffset;
-            if (pullOffset > 0) {
-                paint.setTextSize(i > mMiddleItemIndex ? decreasing : i < mMiddleItemIndex ? increased : textSize);
-            } else if (pullOffset < 0) {
-                paint.setTextSize(i > mMiddleItemIndex ? increased : i < mMiddleItemIndex ? decreasing : textSize);
+            final float centerY = y - offsetY;
+            if (centerY > middleItemY) {
+                final float scale = (measuredHeight - centerY) / middleItemY;
+                paint.setTextSize(mTextSize * scale);
             } else {
-                paint.setTextSize(textSize);
+                final float scale = centerY / middleItemY;
+                paint.setTextSize(mTextSize * scale);
             }
 
-            // Matrix matrix = new Matrix();
-            //
-            // camera.save();
-            // float deg = 360.0f / 50;
-            // if (i < mMiddleItemIndex) {
-            //     camera.rotateX(-(i - mMiddleItemIndex) * deg);
-            // } else if (i > mMiddleItemIndex) {
-            //     camera.rotateX(360 - (i - mMiddleItemIndex) * deg);
-            // }
-            // // camera.translate(0, -mTextSize / 2, 0);
-            // camera.getMatrix(matrix);
-            // camera.restore();
-
-            // canvas.save();
-            // canvas.setMatrix(matrix);
             canvas.drawText(scrollSelectorValue, x, y, paint);
-            // canvas.restore();
             y += mSelectorElementHeight;
         }
 

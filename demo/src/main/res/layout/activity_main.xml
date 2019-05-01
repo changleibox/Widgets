@@ -30,8 +30,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <me.box.widget.picker.PickerView
+        <me.box.widget.picker.NumberPicker
             android:id="@+id/picker2"
+            android:layout_marginStart="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>

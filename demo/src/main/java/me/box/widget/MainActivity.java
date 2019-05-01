@@ -16,6 +16,7 @@ import java.util.Locale;
 import me.box.widget.picker.CNDatePicker;
 import me.box.widget.picker.CNTimePicker;
 import me.box.widget.picker.DatePicker;
+import me.box.widget.picker.NumberPicker;
 import me.box.widget.picker.PickerView;
 import me.box.widget.picker.TimePicker;
 
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final PickerView picker1 = findViewById(R.id.picker1);
-        final PickerView picker2 = findViewById(R.id.picker2);
+        final NumberPicker picker2 = findViewById(R.id.picker2);
 
         final String[] values = new String[22];
         for (int i = 0; i < values.length; i++) {
@@ -48,14 +49,15 @@ public class MainActivity extends AppCompatActivity {
         //         return String.format(Locale.getDefault(), "%d年", value);
         //     }
         // });
+        picker2.setDisplayedValues(values);
         picker2.setMinValue(0);
-        picker2.setMaxValue(11);
-        picker2.setFormatter(new PickerView.Formatter() {
-            @Override
-            public String format(int value) {
-                return String.format(Locale.getDefault(), "%s月", PickerView.getTwoDigitFormatter().format(value + 1));
-            }
-        });
+        picker2.setMaxValue(values.length - 1);
+        // picker2.setFormatter(new NumberPicker.Formatter() {
+        //     @Override
+        //     public String format(int value) {
+        //         return String.format(Locale.getDefault(), "%s月", PickerView.getTwoDigitFormatter().format(value + 1));
+        //     }
+        // });
 
         final CNDatePicker datePicker = findViewById(R.id.date_picker);
         final CNTimePicker timePicker = findViewById(R.id.time_picker);
