@@ -1671,7 +1671,7 @@ public class PickerView extends LinearLayout {
             if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
                 // canvas.save();
                 // canvas.setMatrix(matrix);
-                canvas.drawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
+                canvas.drawText(scrollSelectorValue, x, y, paint);
                 // canvas.restore();
             }
             y += mSelectorElementHeight;
