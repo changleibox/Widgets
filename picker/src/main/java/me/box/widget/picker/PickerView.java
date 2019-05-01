@@ -1426,6 +1426,7 @@ public class PickerView extends LinearLayout {
         final float pullOffset = (currentScrollOffset - initialScrollOffset) / initialScrollOffset;
         // draw the selector wheel
         final int[] selectorIndices = mSelectorIndices;
+        final Paint paint = new Paint(mSelectorWheelPaint);
         for (int i = 0; i < selectorIndices.length; i++) {
             final int selectorIndex = selectorIndices[i];
             final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
@@ -1435,7 +1436,6 @@ public class PickerView extends LinearLayout {
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
             final float initialTextSizeOffset = 1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset;
-            final Paint paint = new Paint(mSelectorWheelPaint);
             final float textSize = mSelectorWheelPaint.getTextSize() * initialTextSizeOffset;
             final float textSizeOffset = (1.0f - initialTextSizeOffset) * Math.abs(pullOffset);
             final float decreasing = textSize - textSize * textSizeOffset;
