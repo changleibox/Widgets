@@ -18,6 +18,8 @@
         <attr name="datePickerDialogTheme" format="reference"/>
         <!-- The TimePicker style. -->
         <attr name="timePickerStyle" format="reference"/>
+        <!-- The PickerView style. -->
+        <attr name="pickerViewStyle" format="reference"/>
     </declare-styleable>
 
     <!-- ======================================= -->
@@ -165,5 +167,34 @@
         <!--in which case it may ignore the requested time picker mode due to-->
         <!--space considerations. &ndash;&gt;-->
         <!--<attr name="dialogMode"/>-->
+    </declare-styleable>
+
+    <declare-styleable name="PickerView">
+        <!-- [0.0 - 1.0] -->
+        <attr name="wheelItemOffset"/>
+        <!-- Number of one-time drawings -->
+        <attr name="wheelItemCount"/>
+        <!-- @hide Color for the solid color background if such for optimized rendering. -->
+        <attr name="solidColor"/>
+        <!-- @hide The divider for making the selection area. -->
+        <attr name="selectionDivider"/>
+        <!-- @hide The height of the selection divider. -->
+        <attr name="selectionDividerHeight"/>
+        <!-- @hide The distance between the two selection dividers. -->
+        <attr name="selectionDividersDistance"/>
+        <!-- @hide The min height of the PickerView. -->
+        <attr name="internalMinHeight"/>
+        <!-- @hide The max height of the PickerView. -->
+        <attr name="internalMaxHeight"/>
+        <!-- @hide The min width of the PickerView. -->
+        <attr name="internalMinWidth"/>
+        <!-- @hide The max width of the PickerView. -->
+        <attr name="internalMaxWidth"/>
+        <!-- @hide The layout of the PickerView. -->
+        <attr name="internalLayout"/>
+        <!-- @hide The drawable for pressed virtual (increment/decrement) buttons. -->
+        <attr name="virtualButtonPressedDrawable"/>
+        <!-- @hide If true then the selector wheel is hidden until the picker has focus. -->
+        <attr name="hideWheelUntilFocused"/>
     </declare-styleable>
 </resources>

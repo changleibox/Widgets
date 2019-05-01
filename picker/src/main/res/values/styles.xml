@@ -53,6 +53,26 @@
         <item name="wheelItemOffset">0.0</item>
     </style>
 
+    <style name="Widget.PickerView">
+        <item name="internalLayout">@layout/picker_view_material</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:fadingEdge">vertical</item>
+        <item name="android:fadingEdgeLength">50dip</item>
+    </style>
+
+    <style name="Widget.Material.PickerView" parent="Widget.PickerView">
+        <item name="internalLayout">@layout/picker_view_with_selector_wheel</item>
+        <item name="solidColor">@android:color/transparent</item>
+        <item name="selectionDivider">@drawable/numberpicker_selection_divider</item>
+        <item name="selectionDividerHeight">2dip</item>
+        <item name="selectionDividersDistance">48dip</item>
+        <item name="internalMinWidth">64dip</item>
+        <item name="internalMaxHeight">180dip</item>
+        <item name="virtualButtonPressedDrawable">?attr/selectableItemBackground</item>
+        <item name="wheelItemCount">3</item>
+        <item name="wheelItemOffset">0.0</item>
+    </style>
+
     <style name="Widget.DatePicker">
         <item name="legacyLayout">@layout/date_picker_legacy</item>
     </style>

@@ -23,13 +23,13 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <me.box.widget.picker.CNDatePicker
+        <me.box.widget.picker.PickerView
             android:id="@+id/date_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <me.box.widget.picker.CNTimePicker
+        <me.box.widget.picker.PickerView
             android:id="@+id/time_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

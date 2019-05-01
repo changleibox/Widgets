@@ -13,6 +13,7 @@
         <item name="numberPickerStyle">@style/AppTheme.NumberPicker</item>
         <item name="datePickerStyle">@style/AppTheme.DatePicker</item>
         <item name="timePickerStyle">@style/AppTheme.TimePicker</item>
+        <item name="pickerViewStyle">@style/AppTheme.PickerView</item>
     </style>
 
     <style name="TextAppearance.Large.Inverse.NumberPickerInputText" parent="TextAppearance.AppCompat.Large.Inverse">
@@ -27,7 +28,7 @@
         <item name="internalMaxHeight">200dp</item>
         <item name="selectionDividersDistance">40dp</item>
         <item name="internalMinWidth">70dp</item>
-        <item name="wheelItemOffset">0.2</item>
+        <item name="wheelItemOffset">0.01</item>
     </style>
 
     <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
@@ -36,6 +37,16 @@
 
     <style name="AppTheme.TimePicker" parent="Widget.Material.TimePicker">
         <item name="legacyLayout">@layout/layout_time_picker_legacy_holo</item>
+    </style>
+
+    <style name="AppTheme.PickerView" parent="Widget.Material.PickerView">
+        <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
+        <item name="selectionDividerHeight">1dp</item>
+        <item name="wheelItemCount">5</item>
+        <item name="internalMaxHeight">200dp</item>
+        <item name="selectionDividersDistance">40dp</item>
+        <item name="internalMinWidth">70dp</item>
+        <item name="wheelItemOffset">0.01</item>
     </style>
 
 </resources>
