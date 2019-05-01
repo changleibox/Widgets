@@ -1666,7 +1666,7 @@ public class NumberPicker extends LinearLayout {
     @Override
     public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
-        event.setClassName(android.widget.NumberPicker.class.getName());
+        event.setClassName(NumberPicker.class.getName());
         event.setScrollable(true);
         event.setScrollY((mMinValue + mValue) * mSelectorElementHeight);
         event.setMaxScrollY((mMaxValue - mMinValue) * mSelectorElementHeight);
