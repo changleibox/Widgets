@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -34,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -2249,8 +2251,7 @@ public class PickerView extends LinearLayout {
         }
 
         @Override
-        public List<AccessibilityNodeInfo> findAccessibilityNodeInfosByText(String searched,
-                                                                            int virtualViewId) {
+        public List<AccessibilityNodeInfo> findAccessibilityNodeInfosByText(String searched, int virtualViewId) {
             if (TextUtils.isEmpty(searched)) {
                 return Collections.emptyList();
             }
@@ -2258,19 +2259,15 @@ public class PickerView extends LinearLayout {
             List<AccessibilityNodeInfo> result = new ArrayList<AccessibilityNodeInfo>();
             switch (virtualViewId) {
                 case View.NO_ID: {
-                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase,
-                            VIRTUAL_VIEW_ID_DECREMENT, result);
-                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase,
-                            VIRTUAL_VIEW_ID_INPUT, result);
-                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase,
-                            VIRTUAL_VIEW_ID_INCREMENT, result);
+                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase, VIRTUAL_VIEW_ID_DECREMENT, result);
+                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase, VIRTUAL_VIEW_ID_INPUT, result);
+                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase, VIRTUAL_VIEW_ID_INCREMENT, result);
                     return result;
                 }
                 case VIRTUAL_VIEW_ID_DECREMENT:
                 case VIRTUAL_VIEW_ID_INCREMENT:
                 case VIRTUAL_VIEW_ID_INPUT: {
-                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase, virtualViewId,
-                            result);
+                    findAccessibilityNodeInfosByTextInChild(searchedLowerCase, virtualViewId, result);
                     return result;
                 }
             }
@@ -2299,16 +2296,14 @@ public class PickerView extends LinearLayout {
                             return false;
                         }
                         case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD: {
-                            if (PickerView.this.isEnabled()
-                                    && (getWrapSelectorWheel() || getValue() < getMaxValue())) {
+                            if (PickerView.this.isEnabled() && (getWrapSelectorWheel() || getValue() < getMaxValue())) {
                                 changeValueByOne(true);
                                 return true;
                             }
                         }
                         return false;
                         case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD: {
-                            if (PickerView.this.isEnabled()
-                                    && (getWrapSelectorWheel() || getValue() > getMinValue())) {
+                            if (PickerView.this.isEnabled() && (getWrapSelectorWheel() || getValue() > getMinValue())) {
                                 changeValueByOne(false);
                                 return true;
                             }
@@ -2349,8 +2344,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS: {
                             if (mAccessibilityFocusedView != virtualViewId) {
                                 mAccessibilityFocusedView = virtualViewId;
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                                 mInputText.invalidate();
                                 return true;
                             }
@@ -2359,8 +2353,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS: {
                             if (mAccessibilityFocusedView == virtualViewId) {
                                 mAccessibilityFocusedView = UNDEFINED;
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
                                 mInputText.invalidate();
                                 return true;
                             }
@@ -2377,8 +2370,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_CLICK: {
                             if (PickerView.this.isEnabled()) {
                                 PickerView.this.changeValueByOne(true);
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_CLICKED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_CLICKED);
                                 return true;
                             }
                         }
@@ -2386,8 +2378,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS: {
                             if (mAccessibilityFocusedView != virtualViewId) {
                                 mAccessibilityFocusedView = virtualViewId;
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                                 invalidate(0, mBottomSelectionDividerBottom, mRight, mBottom);
                                 return true;
                             }
@@ -2396,8 +2387,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS: {
                             if (mAccessibilityFocusedView == virtualViewId) {
                                 mAccessibilityFocusedView = UNDEFINED;
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
                                 invalidate(0, mBottomSelectionDividerBottom, mRight, mBottom);
                                 return true;
                             }
@@ -2412,8 +2402,7 @@ public class PickerView extends LinearLayout {
                             if (PickerView.this.isEnabled()) {
                                 final boolean increment = (virtualViewId == VIRTUAL_VIEW_ID_INCREMENT);
                                 PickerView.this.changeValueByOne(increment);
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_CLICKED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_CLICKED);
                                 return true;
                             }
                         }
@@ -2421,8 +2410,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS: {
                             if (mAccessibilityFocusedView != virtualViewId) {
                                 mAccessibilityFocusedView = virtualViewId;
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                                 invalidate(0, 0, mRight, mTopSelectionDividerTop);
                                 return true;
                             }
@@ -2431,8 +2419,7 @@ public class PickerView extends LinearLayout {
                         case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS: {
                             if (mAccessibilityFocusedView == virtualViewId) {
                                 mAccessibilityFocusedView = UNDEFINED;
-                                sendAccessibilityEventForVirtualView(virtualViewId,
-                                        AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
+                                sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
                                 invalidate(0, 0, mRight, mTopSelectionDividerTop);
                                 return true;
                             }
@@ -2449,8 +2436,7 @@ public class PickerView extends LinearLayout {
             switch (virtualViewId) {
                 case VIRTUAL_VIEW_ID_DECREMENT: {
                     if (hasVirtualDecrementButton()) {
-                        sendAccessibilityEventForVirtualButton(virtualViewId, eventType,
-                                getVirtualDecrementButtonText());
+                        sendAccessibilityEventForVirtualButton(virtualViewId, eventType, getVirtualDecrementButtonText());
                     }
                 }
                 break;
@@ -2460,8 +2446,7 @@ public class PickerView extends LinearLayout {
                 break;
                 case VIRTUAL_VIEW_ID_INCREMENT: {
                     if (hasVirtualIncrementButton()) {
-                        sendAccessibilityEventForVirtualButton(virtualViewId, eventType,
-                                getVirtualIncrementButtonText());
+                        sendAccessibilityEventForVirtualButton(virtualViewId, eventType, getVirtualIncrementButtonText());
                     }
                 }
                 break;
@@ -2478,8 +2463,7 @@ public class PickerView extends LinearLayout {
             }
         }
 
-        private void sendAccessibilityEventForVirtualButton(int virtualViewId, int eventType,
-                                                            String text) {
+        private void sendAccessibilityEventForVirtualButton(int virtualViewId, int eventType, String text) {
             if (((AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE)).isEnabled()) {
                 AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
                 event.setClassName(Button.class.getName());
@@ -2491,27 +2475,23 @@ public class PickerView extends LinearLayout {
             }
         }
 
-        private void findAccessibilityNodeInfosByTextInChild(String searchedLowerCase,
-                                                             int virtualViewId, List<AccessibilityNodeInfo> outResult) {
+        private void findAccessibilityNodeInfosByTextInChild(String searchedLowerCase, int virtualViewId, List<AccessibilityNodeInfo> outResult) {
             switch (virtualViewId) {
                 case VIRTUAL_VIEW_ID_DECREMENT: {
                     String text = getVirtualDecrementButtonText();
-                    if (!TextUtils.isEmpty(text)
-                            && text.toLowerCase().contains(searchedLowerCase)) {
+                    if (!TextUtils.isEmpty(text) && text.toLowerCase().contains(searchedLowerCase)) {
                         outResult.add(createAccessibilityNodeInfo(VIRTUAL_VIEW_ID_DECREMENT));
                     }
                 }
                 return;
                 case VIRTUAL_VIEW_ID_INPUT: {
                     CharSequence text = mInputText.getText();
-                    if (!TextUtils.isEmpty(text) &&
-                            text.toString().toLowerCase().contains(searchedLowerCase)) {
+                    if (!TextUtils.isEmpty(text) && text.toString().toLowerCase().contains(searchedLowerCase)) {
                         outResult.add(createAccessibilityNodeInfo(VIRTUAL_VIEW_ID_INPUT));
                         return;
                     }
                     CharSequence contentDesc = mInputText.getText();
-                    if (!TextUtils.isEmpty(contentDesc) &&
-                            contentDesc.toString().toLowerCase().contains(searchedLowerCase)) {
+                    if (!TextUtils.isEmpty(contentDesc) && contentDesc.toString().toLowerCase().contains(searchedLowerCase)) {
                         outResult.add(createAccessibilityNodeInfo(VIRTUAL_VIEW_ID_INPUT));
                         return;
                     }
@@ -2519,8 +2499,7 @@ public class PickerView extends LinearLayout {
                 break;
                 case VIRTUAL_VIEW_ID_INCREMENT: {
                     String text = getVirtualIncrementButtonText();
-                    if (!TextUtils.isEmpty(text)
-                            && text.toLowerCase().contains(searchedLowerCase)) {
+                    if (!TextUtils.isEmpty(text) && text.toLowerCase().contains(searchedLowerCase)) {
                         outResult.add(createAccessibilityNodeInfo(VIRTUAL_VIEW_ID_INCREMENT));
                     }
                 }
@@ -2539,7 +2518,7 @@ public class PickerView extends LinearLayout {
             }
             Rect boundsInParent = mTempRect;
             boundsInParent.set(left, top, right, bottom);
-            // info.setVisibleToUser(isVisibleToUser(boundsInParent));
+            info.setVisibleToUser(isVisibleToUser(boundsInParent));
             info.setBoundsInParent(boundsInParent);
             Rect boundsInScreen = boundsInParent;
             int[] locationOnScreen = mTempArray;
@@ -2561,7 +2540,7 @@ public class PickerView extends LinearLayout {
             info.setEnabled(PickerView.this.isEnabled());
             Rect boundsInParent = mTempRect;
             boundsInParent.set(left, top, right, bottom);
-            // info.setVisibleToUser(isVisibleToUser(boundsInParent));
+            info.setVisibleToUser(isVisibleToUser(boundsInParent));
             info.setBoundsInParent(boundsInParent);
             Rect boundsInScreen = boundsInParent;
             int[] locationOnScreen = mTempArray;
@@ -2600,22 +2579,19 @@ public class PickerView extends LinearLayout {
             info.setEnabled(PickerView.this.isEnabled());
             info.setScrollable(true);
 
-            // final float applicationScale =
-            //         getContext().getResources().getCompatibilityInfo().applicationScale;
+            final float applicationScale = getResources().getConfiguration().fontScale;
 
             Rect boundsInParent = mTempRect;
             boundsInParent.set(left, top, right, bottom);
-            // boundsInParent.scale(applicationScale);
-            info.setBoundsInParent(boundsInParent);
+            info.setBoundsInParent(scale(boundsInParent, applicationScale));
 
-            // info.setVisibleToUser(isVisibleToUser());
+            info.setVisibleToUser(isVisibleToUser(boundsInParent));
 
             Rect boundsInScreen = boundsInParent;
             int[] locationOnScreen = mTempArray;
             getLocationOnScreen(locationOnScreen);
             boundsInScreen.offset(locationOnScreen[0], locationOnScreen[1]);
-            // boundsInScreen.scale(applicationScale);
-            info.setBoundsInScreen(boundsInScreen);
+            info.setBoundsInScreen(scale(boundsInScreen, applicationScale));
 
             if (mAccessibilityFocusedView != View.NO_ID) {
                 info.addAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS);
@@ -2649,8 +2625,7 @@ public class PickerView extends LinearLayout {
                 value = getWrappedSelectorIndex(value);
             }
             if (value >= mMinValue) {
-                return (mDisplayedValues == null) ? formatNumber(value)
-                        : mDisplayedValues[value - mMinValue];
+                return (mDisplayedValues == null) ? formatNumber(value) : mDisplayedValues[value - mMinValue];
             }
             return null;
         }
@@ -2661,14 +2636,49 @@ public class PickerView extends LinearLayout {
                 value = getWrappedSelectorIndex(value);
             }
             if (value <= mMaxValue) {
-                return (mDisplayedValues == null) ? formatNumber(value)
-                        : mDisplayedValues[value - mMinValue];
+                return (mDisplayedValues == null) ? formatNumber(value) : mDisplayedValues[value - mMinValue];
             }
             return null;
+        }
+
+        private boolean isVisibleToUser(Rect localRect) {
+            if (localRect != null && !localRect.isEmpty()) {
+                if (getWindowVisibility() != 0) {
+                    return false;
+                } else {
+                    ViewParent viewParent;
+                    View view;
+                    for (viewParent = getParent(); viewParent instanceof View; viewParent = view.getParent()) {
+                        view = (View) viewParent;
+                        if (view.getAlpha() <= 0.0F || view.getVisibility() != 0) {
+                            return false;
+                        }
+                    }
+
+                    return viewParent != null;
+                }
+            } else {
+                return false;
+            }
         }
     }
 
     static private String formatNumberWithLocale(int value) {
         return String.format(Locale.getDefault(), "%d", value);
+    }
+
+    static Rect scale(@NonNull Rect rect, float scale) {
+        int left = rect.left;
+        int top = rect.top;
+        int right = rect.right;
+        int bottom = rect.bottom;
+        if (scale != 1.0f) {
+            left = (int) (left * scale + 0.5f);
+            top = (int) (top * scale + 0.5f);
+            right = (int) (right * scale + 0.5f);
+            bottom = (int) (bottom * scale + 0.5f);
+        }
+        rect.set(left, top, right, bottom);
+        return rect;
     }
 }
