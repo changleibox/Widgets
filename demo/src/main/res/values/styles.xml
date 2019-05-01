@@ -16,7 +16,12 @@
         <item name="pickerViewStyle">@style/AppTheme.PickerView</item>
     </style>
 
-    <style name="TextAppearance.Large.Inverse.NumberPickerInputText" parent="TextAppearance.AppCompat.Large.Inverse">
+    <style name="TextAppearance.Material.NumberPicker." parent="TextAppearance.Large.Inverse.NumberPickerInputText">
+        <item name="android:textColor">#222</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextAppearance.Material.PickerView" parent="TextAppearance.Large.Inverse.PickerViewInputText">
         <item name="android:textColor">#222</item>
         <item name="android:textSize">20sp</item>
     </style>

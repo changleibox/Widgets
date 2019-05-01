@@ -11,23 +11,30 @@
 
     <style name="TextAppearance.Material.NumberPicker" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
 
-    <style name="TextAppearance.Material.TimePicker.InputField" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+    <!--<style name="TextAppearance.Material.TimePicker.InputField" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <style name="TextAppearance.Material.TimePicker.PromptLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+    <!--<style name="TextAppearance.Material.TimePicker.PromptLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <style name="TextAppearance.Material.TimePicker.TimeLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+    <!--<style name="TextAppearance.Material.TimePicker.TimeLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <style name="TextAppearance.Material.TimePicker.AmPmLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>
+    <!--<style name="TextAppearance.Material.TimePicker.AmPmLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <!--<style name="TextAppearance.Material.DatePicker.DayOfWeekLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+    <!--<style name="TextAppearance.Material.DatePicker.DayOfWeekLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <!--<style name="TextAppearance.Material.DatePicker.MonthLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+    <!--<style name="TextAppearance.Material.DatePicker.MonthLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <!--<style name="TextAppearance.Material.DatePicker.DayOfMonthLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+    <!--<style name="TextAppearance.Material.DatePicker.DayOfMonthLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <!--<style name="TextAppearance.Material.DatePicker.YearLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+    <!--<style name="TextAppearance.Material.DatePicker.YearLabel" parent="TextAppearance.Material.NumberPicker"/>-->
 
-    <!--<style name="TextAppearance.Material.DatePicker.List.YearLabel" parent="TextAppearance.Large.Inverse.NumberPickerInputText"/>-->
+    <!--<style name="TextAppearance.Material.DatePicker.List.YearLabel" parent="TextAppearance.Material.NumberPicker"/>-->
+
+    <style name="TextAppearance.Large.Inverse.PickerViewInputText" parent="TextAppearance.AppCompat.Large.Inverse">
+        <item name="android:textColor">#222</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TextAppearance.Material.PickerView" parent="TextAppearance.Large.Inverse.PickerViewInputText"/>
 
     <style name="Widget">
         <item name="android:textAppearance">?android:textAppearance</item>
