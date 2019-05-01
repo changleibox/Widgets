@@ -1418,16 +1418,16 @@ public class PickerView extends LinearLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         // camera.applyToCanvas(canvas);
-        float x = (getRight() - getLeft()) >> 1;
+        final float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
 
         final float currentScrollOffset = mCurrentScrollOffset;
         final float initialScrollOffset = mInitialScrollOffset;
         final float pullOffset = (currentScrollOffset - initialScrollOffset) / initialScrollOffset;
         // draw the selector wheel
-        int[] selectorIndices = mSelectorIndices;
+        final int[] selectorIndices = mSelectorIndices;
         for (int i = 0; i < selectorIndices.length; i++) {
-            int selectorIndex = selectorIndices[i];
+            final int selectorIndex = selectorIndices[i];
             final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
             // Do not draw the middle item if input is visible since the input
             // is shown only if the wheel is static and it covers the middle
@@ -1471,14 +1471,14 @@ public class PickerView extends LinearLayout {
         // draw the selection dividers
         if (mSelectionDivider != null) {
             // draw the top divider
-            int topOfTopDivider = mTopSelectionDividerTop;
-            int bottomOfTopDivider = topOfTopDivider + mSelectionDividerHeight;
+            final int topOfTopDivider = mTopSelectionDividerTop;
+            final int bottomOfTopDivider = topOfTopDivider + mSelectionDividerHeight;
             mSelectionDivider.setBounds(0, topOfTopDivider, getRight(), bottomOfTopDivider);
             mSelectionDivider.draw(canvas);
 
             // draw the bottom divider
-            int bottomOfBottomDivider = mBottomSelectionDividerBottom;
-            int topOfBottomDivider = bottomOfBottomDivider - mSelectionDividerHeight;
+            final int bottomOfBottomDivider = mBottomSelectionDividerBottom;
+            final int topOfBottomDivider = bottomOfBottomDivider - mSelectionDividerHeight;
             mSelectionDivider.setBounds(0, topOfBottomDivider, getRight(), bottomOfBottomDivider);
             mSelectionDivider.draw(canvas);
         }
