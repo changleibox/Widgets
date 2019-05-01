@@ -1147,20 +1147,6 @@ public class PickerView extends LinearLayout {
         }
         int maxTextWidth = 0;
         if (mDisplayedValues == null) {
-            // float maxDigitWidth = 0;
-            // for (int i = 0; i <= 9; i++) {
-            //     final float digitWidth = mSelectorWheelPaint.measureText(formatNumber(i));
-            //     if (digitWidth > maxDigitWidth) {
-            //         maxDigitWidth = digitWidth;
-            //     }
-            // }
-            // int numberOfDigits = 0;
-            // int current = mMaxValue;
-            // while (current > 0) {
-            //     numberOfDigits++;
-            //     current = current / 10;
-            // }
-            // maxTextWidth = (int) (numberOfDigits * maxDigitWidth);
             for (int i = mMinValue; i < mMaxValue; i++) {
                 final float textWidth = mSelectorWheelPaint.measureText(formatNumber(i));
                 if (textWidth > maxTextWidth) {
