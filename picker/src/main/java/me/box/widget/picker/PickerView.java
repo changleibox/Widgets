@@ -1616,17 +1616,16 @@ public class PickerView extends LinearLayout {
 
     private void initializeSelectorWheel() {
         initializeSelectorWheelIndices();
-        int[] selectorIndices = mSelectorIndices;
-        int totalTextHeight = selectorIndices.length * mTextSize;
-        float totalTextGapHeight = (getBottom() - getTop()) - totalTextHeight;
-        float textGapCount = selectorIndices.length;
+        final int[] selectorIndices = mSelectorIndices;
+        final int totalTextHeight = selectorIndices.length * mTextSize;
+        final float totalTextGapHeight = (getBottom() - getTop()) - totalTextHeight;
+        final float textGapCount = selectorIndices.length;
         mSelectorTextGapHeight = (int) (totalTextGapHeight / textGapCount + 0.5f);
         mSelectorElementHeight = mTextSize + mSelectorTextGapHeight;
         // Ensure that the middle item is positioned the same as the text in
         // mInputText
-        int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
-        mInitialScrollOffset = editTextTextPosition
-                - (mSelectorElementHeight * mMiddleItemIndex);
+        final int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
+        mInitialScrollOffset = editTextTextPosition - (mSelectorElementHeight * mMiddleItemIndex);
         mCurrentScrollOffset = mInitialScrollOffset;
         updateInputTextView();
     }

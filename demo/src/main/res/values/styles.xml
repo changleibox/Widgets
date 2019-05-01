@@ -18,7 +18,7 @@
 
     <style name="TextAppearance.Material.NumberPicker" parent="TextAppearance.Large.Inverse.NumberPickerInputText">
         <item name="android:textColor">#222</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="TextAppearance.Material.PickerView" parent="TextAppearance.Large.Inverse.PickerViewInputText">
@@ -30,7 +30,7 @@
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
         <item name="wheelItemCount">5</item>
-        <item name="internalMaxHeight">180dp</item>
+        <item name="internalMaxHeight">200dp</item>
         <item name="selectionDividersDistance">30dp</item>
         <item name="internalMinWidth">70dp</item>
         <item name="wheelItemOffset">0.12</item>
@@ -48,7 +48,7 @@
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
         <item name="wheelItemCount">5</item>
-        <item name="internalMaxHeight">180dp</item>
+        <item name="internalMaxHeight">150dp</item>
         <item name="selectionDividersDistance">30dp</item>
         <item name="internalMinWidth">70dp</item>
         <item name="wheelItemOffset">0.12</item>
