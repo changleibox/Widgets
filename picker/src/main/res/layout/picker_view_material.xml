@@ -7,7 +7,7 @@
 
     <view
         android:id="@+id/picker_view_input"
-        class="me.box.widget.picker.PickerView$CustomEditText"
+        class="android.widget.TextView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@null"

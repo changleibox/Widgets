@@ -4,6 +4,7 @@
 
 package me.box.widget.picker;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
@@ -20,7 +21,6 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.AppCompatEditText;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -41,17 +41,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,11 +95,6 @@ public class PickerView extends LinearLayout {
     private static final long DEFAULT_LONG_PRESS_UPDATE_INTERVAL = 300;
 
     /**
-     * The index of the middle selector item.
-     */
-    private static final int SELECTOR_MIDDLE_ITEM_INDEX = SELECTOR_WHEEL_ITEM_COUNT / 2;
-
-    /**
      * The coefficient by which to adjust (divide) the max fling velocity.
      */
     private static final int SELECTOR_MAX_FLING_VELOCITY_ADJUSTMENT = 8;
@@ -136,7 +127,7 @@ public class PickerView extends LinearLayout {
     /**
      * The resource id for the default layout.
      */
-    private static final int DEFAULT_LAYOUT_RESOURCE_ID = R.layout.picker_view;
+    private static final int DEFAULT_LAYOUT_RESOURCE_ID = R.layout.picker_view_material;
 
     /**
      * Constant for unspecified size.
@@ -181,24 +172,14 @@ public class PickerView extends LinearLayout {
     /**
      * @hide
      */
-    public static final Formatter getTwoDigitFormatter() {
+    public static Formatter getTwoDigitFormatter() {
         return sTwoDigitFormatter;
     }
 
     /**
-     * The increment button.
-     */
-    private final ImageButton mIncrementButton;
-
-    /**
-     * The decrement button.
-     */
-    private final ImageButton mDecrementButton;
-
-    /**
      * The text for showing the current value.
      */
-    private final EditText mInputText;
+    private final TextView mInputText;
 
     /**
      * The distance between the two selection dividers.
@@ -392,11 +373,6 @@ public class PickerView extends LinearLayout {
     private final int mSolidColor;
 
     /**
-     * Flag whether this widget has a selector wheel.
-     */
-    private final boolean mHasSelectorWheel;
-
-    /**
      * Divider for showing item to be selected while scrolling
      */
     private final Drawable mSelectionDivider;
@@ -466,8 +442,6 @@ public class PickerView extends LinearLayout {
      * If true then the selector wheel is hidden until the picker has focus.
      */
     private boolean mHideWheelUntilFocused;
-
-    private final int mWheelItemCount;
 
     private final int mMiddleItemIndex;
 
@@ -590,19 +564,15 @@ public class PickerView extends LinearLayout {
      *                     defStyleAttr is 0 or can not be found in the theme. Can be 0
      *                     to not look for defaults.
      */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public PickerView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         // process style attributes
         final TypedArray attributesArray = context.obtainStyledAttributes(
                 attrs, R.styleable.PickerView, defStyleAttr, defStyleRes);
-        int layoutResId = attributesArray.getResourceId(
+        final int layoutResId = attributesArray.getResourceId(
                 R.styleable.PickerView_internalLayout, DEFAULT_LAYOUT_RESOURCE_ID);
-
-        mHasSelectorWheel = (layoutResId != DEFAULT_LAYOUT_RESOURCE_ID);
-        if (mHasSelectorWheel) {
-            layoutResId = R.layout.picker_view_material;
-        }
 
         mHideWheelUntilFocused = attributesArray.getBoolean(
                 R.styleable.PickerView_hideWheelUntilFocused, false);
@@ -665,7 +635,6 @@ public class PickerView extends LinearLayout {
             wheelItemCount = SELECTOR_WHEEL_ITEM_COUNT;
         }
 
-        mWheelItemCount = wheelItemCount;
         mMiddleItemIndex = wheelItemCount >> 1;
         mSelectorIndices = new int[wheelItemCount];
 
@@ -680,75 +649,18 @@ public class PickerView extends LinearLayout {
         // directly (see ViewGroup.drawChild()). However, this class uses
         // the fading edge effect implemented by View and we need our
         // draw() method to be called. Therefore, we declare we will draw.
-        setWillNotDraw(!mHasSelectorWheel);
+        setWillNotDraw(false);
 
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(layoutResId, this, true);
-
-        OnClickListener onClickListener = new OnClickListener() {
-            public void onClick(View v) {
-                hideSoftInput();
-                mInputText.clearFocus();
-                if (v.getId() == R.id.increment) {
-                    changeValueByOne(true);
-                } else {
-                    changeValueByOne(false);
-                }
-            }
-        };
-
-        OnLongClickListener onLongClickListener = new OnLongClickListener() {
-            public boolean onLongClick(View v) {
-                hideSoftInput();
-                mInputText.clearFocus();
-                if (v.getId() == R.id.increment) {
-                    postChangeCurrentByOneFromLongPress(true, 0);
-                } else {
-                    postChangeCurrentByOneFromLongPress(false, 0);
-                }
-                return true;
-            }
-        };
-
-        // increment button
-        if (!mHasSelectorWheel) {
-            mIncrementButton = findViewById(R.id.increment);
-            mIncrementButton.setOnClickListener(onClickListener);
-            mIncrementButton.setOnLongClickListener(onLongClickListener);
-        } else {
-            mIncrementButton = null;
-        }
-
-        // decrement button
-        if (!mHasSelectorWheel) {
-            mDecrementButton = findViewById(R.id.decrement);
-            mDecrementButton.setOnClickListener(onClickListener);
-            mDecrementButton.setOnLongClickListener(onLongClickListener);
-        } else {
-            mDecrementButton = null;
-        }
 
         // input text
         mInputText = findViewById(R.id.picker_view_input);
-        mInputText.setOnFocusChangeListener(new OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    mInputText.selectAll();
-                } else {
-                    mInputText.setSelection(0, 0);
-                    validateInputTextView(v);
-                }
-            }
-        });
-        mInputText.setFilters(new InputFilter[]{
-                // new InputTextFilter()
-        });
         mInputText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         mInputText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
         mInputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mInputText.setVisibility(INVISIBLE);
 
         // initialize constants
         ViewConfiguration configuration = ViewConfiguration.get(context);
@@ -791,10 +703,6 @@ public class PickerView extends LinearLayout {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        if (!mHasSelectorWheel) {
-            super.onLayout(changed, left, top, right, bottom);
-            return;
-        }
         final int msrdWdth = getMeasuredWidth();
         final int msrdHght = getMeasuredHeight();
 
@@ -820,10 +728,6 @@ public class PickerView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (!mHasSelectorWheel) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            return;
-        }
         // Try greedily to fit the max width and height.
         final int newWidthMeasureSpec = makeMeasureSpec(widthMeasureSpec, mMaxWidth);
         final int newHeightMeasureSpec = makeMeasureSpec(heightMeasureSpec, mMaxHeight);
@@ -866,14 +770,13 @@ public class PickerView extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (!mHasSelectorWheel || !isEnabled()) {
+        if (!isEnabled()) {
             return false;
         }
         final int action = event.getActionMasked();
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 removeAllCallbacks();
-                hideSoftInput();
                 mLastDownOrMoveEventY = mLastDownEventY = event.getY();
                 mLastDownEventTime = event.getEventTime();
                 mIgnoreMoveEvents = false;
@@ -917,7 +820,7 @@ public class PickerView extends LinearLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!isEnabled() || !mHasSelectorWheel) {
+        if (!isEnabled()) {
             return false;
         }
         if (mVelocityTracker == null) {
@@ -1010,9 +913,6 @@ public class PickerView extends LinearLayout {
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_UP:
-                if (!mHasSelectorWheel) {
-                    break;
-                }
                 switch (event.getAction()) {
                     case KeyEvent.ACTION_DOWN:
                         if (mWrapSelectorWheel || ((keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
@@ -1051,9 +951,6 @@ public class PickerView extends LinearLayout {
 
     @Override
     protected boolean dispatchHoverEvent(MotionEvent event) {
-        if (!mHasSelectorWheel) {
-            return super.dispatchHoverEvent(event);
-        }
         if (((AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE)).isEnabled()) {
             final int eventY = (int) event.getY();
             final int hoveredVirtualViewId;
@@ -1127,12 +1024,6 @@ public class PickerView extends LinearLayout {
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        if (!mHasSelectorWheel) {
-            mIncrementButton.setEnabled(enabled);
-        }
-        if (!mHasSelectorWheel) {
-            mDecrementButton.setEnabled(enabled);
-        }
         mInputText.setEnabled(enabled);
     }
 
@@ -1261,54 +1152,6 @@ public class PickerView extends LinearLayout {
      */
     public void setValue(int value) {
         setValueInternal(value, false);
-    }
-
-    @Override
-    public boolean performClick() {
-        if (!mHasSelectorWheel) {
-            return super.performClick();
-        } else if (!super.performClick()) {
-            showSoftInput();
-        }
-        return true;
-    }
-
-    @Override
-    public boolean performLongClick() {
-        if (!mHasSelectorWheel) {
-            return super.performLongClick();
-        } else if (!super.performLongClick()) {
-            showSoftInput();
-            mIgnoreMoveEvents = true;
-        }
-        return true;
-    }
-
-    /**
-     * Shows the soft input for its input text.
-     */
-    private void showSoftInput() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            if (mHasSelectorWheel) {
-                mInputText.setVisibility(View.VISIBLE);
-            }
-            mInputText.requestFocus();
-            inputMethodManager.showSoftInput(mInputText, 0);
-        }
-    }
-
-    /**
-     * Hides the soft input if it is active for the input text.
-     */
-    private void hideSoftInput() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null && inputMethodManager.isActive(mInputText)) {
-            inputMethodManager.hideSoftInputFromWindow(getWindowToken(), 0);
-        }
-        if (mHasSelectorWheel) {
-            mInputText.setVisibility(View.INVISIBLE);
-        }
     }
 
     /**
@@ -1605,24 +1448,24 @@ public class PickerView extends LinearLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         // camera.applyToCanvas(canvas);
-        if (!mHasSelectorWheel) {
-            super.onDraw(canvas);
-            return;
-        }
         final boolean showSelectorWheel = !mHideWheelUntilFocused || hasFocus();
-        float x = (getRight() - getLeft()) / 2;
+        float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
 
         // draw the virtual buttons pressed state if needed
         if (showSelectorWheel && mVirtualButtonPressedDrawable != null
                 && mScrollState == OnScrollListener.SCROLL_STATE_IDLE) {
             if (mDecrementVirtualButtonPressed) {
-                mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
+                }
                 mVirtualButtonPressedDrawable.setBounds(0, 0, getRight(), mTopSelectionDividerTop);
                 mVirtualButtonPressedDrawable.draw(canvas);
             }
             if (mIncrementVirtualButtonPressed) {
-                mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
+                }
                 mVirtualButtonPressedDrawable.setBounds(0, mBottomSelectionDividerBottom, getRight(), getBottom());
                 mVirtualButtonPressedDrawable.draw(canvas);
             }
@@ -1704,9 +1547,6 @@ public class PickerView extends LinearLayout {
 
     @Override
     public AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        if (!mHasSelectorWheel) {
-            return super.getAccessibilityNodeProvider();
-        }
         if (mAccessibilityNodeProvider == null) {
             mAccessibilityNodeProvider = new AccessibilityNodeProviderImpl();
         }
@@ -1814,25 +1654,16 @@ public class PickerView extends LinearLayout {
      * @param increment True to increment, false to decrement.
      */
     private void changeValueByOne(boolean increment) {
-        if (mHasSelectorWheel) {
-            hideSoftInput();
-            if (!moveToFinalScrollerPosition(mFlingScroller)) {
-                moveToFinalScrollerPosition(mAdjustScroller);
-            }
-            mPreviousScrollerY = 0;
-            if (increment) {
-                mFlingScroller.startScroll(0, 0, 0, -mSelectorElementHeight, SNAP_SCROLL_DURATION);
-            } else {
-                mFlingScroller.startScroll(0, 0, 0, mSelectorElementHeight, SNAP_SCROLL_DURATION);
-            }
-            invalidate();
-        } else {
-            if (increment) {
-                setValueInternal(mValue + 1, true);
-            } else {
-                setValueInternal(mValue - 1, true);
-            }
+        if (!moveToFinalScrollerPosition(mFlingScroller)) {
+            moveToFinalScrollerPosition(mAdjustScroller);
         }
+        mPreviousScrollerY = 0;
+        if (increment) {
+            mFlingScroller.startScroll(0, 0, 0, -mSelectorElementHeight, SNAP_SCROLL_DURATION);
+        } else {
+            mFlingScroller.startScroll(0, 0, 0, mSelectorElementHeight, SNAP_SCROLL_DURATION);
+        }
+        invalidate();
     }
 
     private void initializeSelectorWheel() {
@@ -2347,7 +2178,7 @@ public class PickerView extends LinearLayout {
      * Command for setting the input text selection.
      */
     private static class SetSelectionCommand implements Runnable {
-        private final EditText mInputText;
+        private final TextView mInputText;
 
         private int mSelectionStart;
         private int mSelectionEnd;
@@ -2357,7 +2188,7 @@ public class PickerView extends LinearLayout {
          */
         private boolean mPosted;
 
-        public SetSelectionCommand(EditText inputText) {
+        public SetSelectionCommand(TextView inputText) {
             mInputText = inputText;
         }
 
@@ -2381,7 +2212,7 @@ public class PickerView extends LinearLayout {
         @Override
         public void run() {
             mPosted = false;
-            mInputText.setSelection(mSelectionStart, mSelectionEnd);
+            // mInputText.setSelection(mSelectionStart, mSelectionEnd);
         }
     }
 
@@ -2911,23 +2742,5 @@ public class PickerView extends LinearLayout {
 
     static private String formatNumberWithLocale(int value) {
         return String.format(Locale.getDefault(), "%d", value);
-    }
-
-    public static Object getValue(Object target, String fieldName) {
-        Class<?> clazz = target.getClass();
-        String[] fs = fieldName.split("\\.");
-        try {
-            for (int i = 0; i < fs.length - 1; i++) {
-                Field f = clazz.getDeclaredField(fs[i]);
-                f.setAccessible(true);
-                target = f.get(target);
-                clazz = target.getClass();
-            }
-            Field f = clazz.getDeclaredField(fs[fs.length - 1]);
-            f.setAccessible(true);
-            return f.get(target);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

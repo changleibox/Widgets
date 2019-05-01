@@ -24,14 +24,14 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <me.box.widget.picker.CNDatePicker
-            android:id="@+id/date_picker"
+        <me.box.widget.picker.PickerView
+            android:id="@+id/picker1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <me.box.widget.picker.CNTimePicker
-            android:id="@+id/time_picker"
+        <me.box.widget.picker.PickerView
+            android:id="@+id/picker2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
@@ -45,14 +45,14 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <me.box.widget.picker.PickerView
-            android:id="@+id/picker1"
+        <me.box.widget.picker.CNDatePicker
+            android:id="@+id/date_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
 
-        <me.box.widget.picker.PickerView
-            android:id="@+id/picker2"
+        <me.box.widget.picker.CNTimePicker
+            android:id="@+id/time_picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"/>
