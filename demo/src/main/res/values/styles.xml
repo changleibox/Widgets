@@ -24,7 +24,7 @@
         <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
         <item name="selectionDividerHeight">1dp</item>
         <item name="wheelItemCount">5</item>
-        <item name="internalMaxHeight">220dp</item>
+        <item name="internalMaxHeight">200dp</item>
         <item name="selectionDividersDistance">40dp</item>
         <item name="internalMinWidth">70dp</item>
         <item name="wheelItemOffset">0.2</item>

@@ -1633,7 +1633,7 @@ public class NumberPicker extends LinearLayout {
             final float initialTextSizeOffset = 1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset;
             final Paint paint = new Paint(mSelectorWheelPaint);
             final float textSize = mSelectorWheelPaint.getTextSize() * initialTextSizeOffset;
-            final float textSizeOffset = (1 - initialTextSizeOffset) * Math.abs(pullOffset);
+            final float textSizeOffset = (1.0f - initialTextSizeOffset) * Math.abs(pullOffset);
             final float decreasing = textSize - textSize * textSizeOffset;
             final float increased = textSize + textSize * textSizeOffset;
             if (pullOffset > 0) {
