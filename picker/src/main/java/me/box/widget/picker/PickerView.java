@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
-import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -2177,24 +2176,6 @@ public class PickerView extends LinearLayout {
         public void run() {
             changeValueByOne(mIncrement);
             postDelayed(this, mLongPressUpdateInterval);
-        }
-    }
-
-    /**
-     * @hide
-     */
-    public static class CustomEditText extends AppCompatEditText {
-
-        public CustomEditText(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        @Override
-        public void onEditorAction(int actionCode) {
-            super.onEditorAction(actionCode);
-            if (actionCode == EditorInfo.IME_ACTION_DONE) {
-                clearFocus();
-            }
         }
     }
 
