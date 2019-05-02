@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < values.length; i++) {
             values[i] = "西红柿西瓜西红柿";
         }
-        picker1.setWrapSelectorWheel(false);
+        picker1.setWrapSelectorWheel(true);
         picker1.setDisplayedValues(values);
         picker1.setMinValue(0);
         picker1.setMaxValue(values.length - 1);
