@@ -677,6 +677,9 @@ public class NumberPicker extends LinearLayout {
         mSelectorIndices = new int[wheelItemCount];
 
         mWheelItemOffset = attributesArray.getFloat(R.styleable.NumberPicker_wheelItemOffset, 0.0f);
+        if (mWheelItemOffset > 1 || mWheelItemOffset < -1) {
+            throw new IllegalArgumentException("The range of wheelItemOffset is [-1, 1].");
+        }
 
         attributesArray.recycle();
 

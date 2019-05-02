@@ -615,6 +615,9 @@ public class PickerView extends LinearLayout {
         mMiddleItemIndex = mSelectorIndices.length >> 1;
 
         mWheelItemOffset = attributesArray.getFloat(R.styleable.PickerView_wheelItemOffset, 0.0f);
+        if (mWheelItemOffset > 1 || mWheelItemOffset < -1) {
+            throw new IllegalArgumentException("The range of wheelItemOffset is [-1, 1].");
+        }
 
         attributesArray.recycle();
 
