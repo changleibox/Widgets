@@ -98,7 +98,7 @@ public class TimePicker extends FrameLayout {
     }
 
     public TimePicker(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        this(context, attrs, defStyleAttr, R.style.Widget_Material_TimePicker);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

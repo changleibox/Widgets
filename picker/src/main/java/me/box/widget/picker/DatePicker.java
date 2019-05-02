@@ -88,7 +88,7 @@ public class DatePicker extends FrameLayout {
     }
 
     public DatePicker(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        this(context, attrs, defStyleAttr, R.style.Widget_Material_DatePicker);
     }
 
     public DatePicker(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {

@@ -581,7 +581,7 @@ public class NumberPicker extends LinearLayout {
      *                     the view. Can be 0 to not look for defaults.
      */
     public NumberPicker(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+        this(context, attrs, defStyleAttr, R.style.Widget_Material_NumberPicker);
     }
 
     /**
