@@ -1494,7 +1494,7 @@ public class PickerView extends LinearLayout {
             final float scale = 1.f - Math.abs((centerY - mMiddleItemY) / mMiddleItemY);
             final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
             final float degreeScale = (mMiddleItemY - centerY) / mMiddleItemY;
-            final float degree = 90 * mWheelItemOffset * degreeScale;
+            final float degree = 90 * degreeScale * mWheelItemOffset;
 
             mCamera.save();
             mCamera.rotateX(degree);
@@ -1503,6 +1503,8 @@ public class PickerView extends LinearLayout {
             mMatrix.postTranslate(x, centerY);
             mMatrix.postScale(realScale, realScale, x, centerY);
             mCamera.restore();
+
+            mSelectorWheelPaint.setAlpha((int) (255.f * realScale));
 
             canvas.save();
             canvas.concat(mMatrix);

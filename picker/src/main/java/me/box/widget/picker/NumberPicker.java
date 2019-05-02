@@ -1698,6 +1698,8 @@ public class NumberPicker extends LinearLayout {
             mMatrix.postScale(realScale, realScale, x, centerY);
             mCamera.restore();
 
+            mSelectorWheelPaint.setAlpha((int) (255.f * realScale));
+
             if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
                 canvas.save();
                 canvas.concat(mMatrix);
