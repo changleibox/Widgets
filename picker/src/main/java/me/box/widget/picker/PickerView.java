@@ -1427,7 +1427,6 @@ public class PickerView extends LinearLayout {
         float y = mCurrentScrollOffset;
 
         // draw the selector wheel
-        final float measuredHeight = getMeasuredHeight();
         final int[] selectorIndices = mSelectorIndices;
         for (int i = 0; i < selectorIndices.length; i++) {
             final int selectorIndex = selectorIndices[i];
@@ -1444,7 +1443,7 @@ public class PickerView extends LinearLayout {
                 scale = centerY / mMiddleItemY;
                 degree = 90 * (1.f - scale);
             } else {
-                scale = (measuredHeight - centerY) / mMiddleItemY;
+                scale = 2.f - centerY / mMiddleItemY;
                 degree = -90 * (1.f - scale);
             }
 
