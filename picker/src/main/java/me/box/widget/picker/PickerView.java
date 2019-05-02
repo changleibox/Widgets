@@ -111,7 +111,7 @@ public class PickerView extends LinearLayout {
     /**
      * The strength of fading in the top and bottom while drawing the selector.
      */
-    private static final float TOP_AND_BOTTOM_FADING_EDGE_STRENGTH = 0.0f;
+    private static final float TOP_AND_BOTTOM_FADING_EDGE_STRENGTH = 0.9f;
 
     /**
      * The default unscaled height of the selection divider.
