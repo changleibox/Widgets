@@ -8,21 +8,14 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Parcelable;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.CalendarView;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -31,7 +24,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
-import me.box.widget.picker.NumberPicker.OnValueChangeListener;
+import me.box.widget.picker.PickerView.OnValueChangeListener;
 
 /**
  * A delegate implementing the basic DatePicker
@@ -53,17 +46,11 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
 
     private final LinearLayout mSpinners;
 
-    private final NumberPicker mDaySpinner;
+    private final PickerView mDaySpinner;
 
-    private final NumberPicker mMonthSpinner;
+    private final PickerView mMonthSpinner;
 
-    private final NumberPicker mYearSpinner;
-
-    private final EditText mDaySpinnerInput;
-
-    private final EditText mMonthSpinnerInput;
-
-    private final EditText mYearSpinnerInput;
+    private final PickerView mYearSpinner;
 
     private final CalendarView mCalendarView;
 
@@ -81,21 +68,21 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
 
     private boolean mIsEnabled = DEFAULT_ENABLED_STATE;
 
-    private static final NumberPicker.Formatter sDayFormatter = new NumberPicker.Formatter() {
+    private static final PickerView.Formatter sDayFormatter = new PickerView.Formatter() {
         @Override
         public String format(int value) {
-            return String.format("%s日", NumberPicker.getTwoDigitFormatter().format(value));
+            return String.format("%s日", PickerView.getTwoDigitFormatter().format(value));
         }
     };
 
-    private static final NumberPicker.Formatter sMonthFormatter = new NumberPicker.Formatter() {
+    private static final PickerView.Formatter sMonthFormatter = new PickerView.Formatter() {
         @Override
         public String format(int value) {
-            return String.format("%s月", NumberPicker.getTwoDigitFormatter().format(value));
+            return String.format("%s月", PickerView.getTwoDigitFormatter().format(value));
         }
     };
 
-    private static final NumberPicker.Formatter sYearFormatter = new NumberPicker.Formatter() {
+    private static final PickerView.Formatter sYearFormatter = new PickerView.Formatter() {
         @Override
         public String format(int value) {
             return String.format("%d年", value);
@@ -120,7 +107,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         String minDate = attributesArray.getString(R.styleable.DatePicker_minDate);
         String maxDate = attributesArray.getString(R.styleable.DatePicker_maxDate);
         int layoutResourceId = attributesArray.getResourceId(
-                R.styleable.DatePicker_legacyLayout, R.layout.date_picker_legacy);
+                R.styleable.DatePicker_internalLayout, R.layout.date_picker_material_cn);
         attributesArray.recycle();
 
         LayoutInflater inflater = (LayoutInflater) context
@@ -129,8 +116,7 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         view.setSaveFromParentEnabled(false);
 
         OnValueChangeListener onChangeListener = new OnValueChangeListener() {
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                updateInputState();
+            public void onValueChange(PickerView picker, int oldVal, int newVal) {
                 mTempDate.setTimeInMillis(mCurrentDate.getTimeInMillis());
                 // take care of wrapping of days and months to update greater fields
                 if (picker == mDaySpinner) {
@@ -178,34 +164,25 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         final int numberpickerInputId = R.id.numberpicker_input;
 
         // day
-        mDaySpinner = (NumberPicker) mDelegator.findViewById(R.id.day);
+        mDaySpinner = (PickerView) mDelegator.findViewById(R.id.day);
         mDaySpinner.setFormatter(sDayFormatter);
         mDaySpinner.setOnLongPressUpdateInterval(100);
         mDaySpinner.setOnValueChangedListener(onChangeListener);
-        mDaySpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        mDaySpinnerInput = (EditText) mDaySpinner.findViewById(numberpickerInputId);
-        mDaySpinnerInput.setFilters(new InputFilter[0]);
 
         // month
-        mMonthSpinner = (NumberPicker) mDelegator.findViewById(R.id.month);
+        mMonthSpinner = (PickerView) mDelegator.findViewById(R.id.month);
         mMonthSpinner.setFormatter(sMonthFormatter);
         mMonthSpinner.setMinValue(0);
         mMonthSpinner.setMaxValue(mNumberOfMonths - 1);
         mMonthSpinner.setDisplayedValues(mShortMonths);
         mMonthSpinner.setOnLongPressUpdateInterval(200);
         mMonthSpinner.setOnValueChangedListener(onChangeListener);
-        mMonthSpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        mMonthSpinnerInput = (EditText) mMonthSpinner.findViewById(numberpickerInputId);
-        mMonthSpinnerInput.setFilters(new InputFilter[0]);
 
         // year
-        mYearSpinner = (NumberPicker) mDelegator.findViewById(R.id.year);
+        mYearSpinner = (PickerView) mDelegator.findViewById(R.id.year);
         mYearSpinner.setFormatter(sYearFormatter);
         mYearSpinner.setOnLongPressUpdateInterval(100);
         mYearSpinner.setOnValueChangedListener(onChangeListener);
-        mYearSpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
-        mYearSpinnerInput = (EditText) mYearSpinner.findViewById(numberpickerInputId);
-        mYearSpinnerInput.setFilters(new InputFilter[0]);
 
         // show only what the user required but make sure we
         // show something and the spinners have higher priority
@@ -482,15 +459,12 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
             switch (order[i]) {
                 case 'd':
                     mSpinners.addView(mDaySpinner);
-                    setImeOptions(mDaySpinner, spinnerCount, i);
                     break;
                 case 'M':
                     mSpinners.addView(mMonthSpinner);
-                    setImeOptions(mMonthSpinner, spinnerCount, i);
                     break;
                 case 'y':
                     mSpinners.addView(mYearSpinner);
-                    setImeOptions(mYearSpinner, spinnerCount, i);
                     break;
                 default:
                     throw new IllegalArgumentException(Arrays.toString(order));
@@ -573,10 +547,6 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         mYearSpinner.setValue(mCurrentDate.get(Calendar.YEAR));
         mMonthSpinner.setValue(mCurrentDate.get(Calendar.MONTH));
         mDaySpinner.setValue(mCurrentDate.get(Calendar.DAY_OF_MONTH));
-
-        if (usingNumericMonths()) {
-            mMonthSpinnerInput.setRawInputType(InputType.TYPE_CLASS_NUMBER);
-        }
     }
 
     /**
@@ -602,25 +572,6 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         }
     }
 
-    /**
-     * Sets the IME options for a spinner based on its ordering.
-     *
-     * @param spinner      The spinner.
-     * @param spinnerCount The total spinner count.
-     * @param spinnerIndex The index of the given spinner.
-     */
-    private void setImeOptions(NumberPicker spinner, int spinnerCount, int spinnerIndex) {
-        final int imeOptions;
-        if (spinnerIndex < spinnerCount - 1) {
-            imeOptions = EditorInfo.IME_ACTION_NEXT;
-        } else {
-            imeOptions = EditorInfo.IME_ACTION_DONE;
-        }
-        final int numberpickerInputId = R.id.numberpicker_input;
-        TextView input = (TextView) spinner.findViewById(numberpickerInputId);
-        input.setImeOptions(imeOptions);
-    }
-
     private void setContentDescriptions() {
         // Day
         trySetContentDescription(mDaySpinner, R.id.increment,
@@ -643,27 +594,6 @@ class CNDatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate 
         View target = root.findViewById(viewId);
         if (target != null) {
             target.setContentDescription(mContext.getString(contDescResId));
-        }
-    }
-
-    private void updateInputState() {
-        // Make sure that if the user changes the value and the IME is active
-        // for one of the inputs if this widget, the IME is closed. If the user
-        // changed the value via the IME and there is a next input the IME will
-        // be shown, otherwise the user chose another means of changing the
-        // value and having the IME up makes no sense.
-        InputMethodManager inputMethodManager = (InputMethodManager) mDelegator.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            if (inputMethodManager.isActive(mYearSpinnerInput)) {
-                mYearSpinnerInput.clearFocus();
-                inputMethodManager.hideSoftInputFromWindow(mDelegator.getWindowToken(), 0);
-            } else if (inputMethodManager.isActive(mMonthSpinnerInput)) {
-                mMonthSpinnerInput.clearFocus();
-                inputMethodManager.hideSoftInputFromWindow(mDelegator.getWindowToken(), 0);
-            } else if (inputMethodManager.isActive(mDaySpinnerInput)) {
-                mDaySpinnerInput.clearFocus();
-                inputMethodManager.hideSoftInputFromWindow(mDelegator.getWindowToken(), 0);
-            }
         }
     }
 }

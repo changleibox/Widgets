@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Parcelable;
-import android.text.InputFilter;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
@@ -17,10 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -37,12 +33,9 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
     private static final boolean DEFAULT_ENABLED_STATE = true;
     private static final int HOURS_IN_HALF_DAY = 12;
 
-    private final NumberPicker mHourSpinner;
-    private final NumberPicker mMinuteSpinner;
-    private final NumberPicker mAmPmSpinner;
-    private final EditText mHourSpinnerInput;
-    private final EditText mMinuteSpinnerInput;
-    private final EditText mAmPmSpinnerInput;
+    private final PickerView mHourSpinner;
+    private final PickerView mMinuteSpinner;
+    private final PickerView mAmPmSpinner;
     private final TextView mDivider;
 
     // Note that the legacy implementation of the TimePicker is
@@ -62,17 +55,17 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
     private boolean mIs24HourView = true;
     private boolean mIsAm;
 
-    private static final NumberPicker.Formatter sHourFormatter = new NumberPicker.Formatter() {
+    private static final PickerView.Formatter sHourFormatter = new PickerView.Formatter() {
         @Override
         public String format(int value) {
-            return String.format("%s时", NumberPicker.getTwoDigitFormatter().format(value));
+            return String.format("%s时", PickerView.getTwoDigitFormatter().format(value));
         }
     };
 
-    private static final NumberPicker.Formatter sMinuteFormatter = new NumberPicker.Formatter() {
+    private static final PickerView.Formatter sMinuteFormatter = new PickerView.Formatter() {
         @Override
         public String format(int value) {
-            return String.format("%s分", NumberPicker.getTwoDigitFormatter().format(value));
+            return String.format("%s分", PickerView.getTwoDigitFormatter().format(value));
         }
     };
 
@@ -83,7 +76,7 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         final TypedArray a = mContext.obtainStyledAttributes(
                 attrs, R.styleable.TimePicker, defStyleAttr, defStyleRes);
         final int layoutResourceId = a.getResourceId(
-                R.styleable.TimePicker_legacyLayout, R.layout.time_picker_legacy);
+                R.styleable.TimePicker_internalLayout, R.layout.time_picker_material_cn);
         a.recycle();
 
         final LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -93,9 +86,8 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         // hour
         mHourSpinner = delegator.findViewById(R.id.hour);
         mHourSpinner.setFormatter(sHourFormatter);
-        mHourSpinner.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            public void onValueChange(NumberPicker spinner, int oldVal, int newVal) {
-                updateInputState();
+        mHourSpinner.setOnValueChangedListener(new PickerView.OnValueChangeListener() {
+            public void onValueChange(PickerView spinner, int oldVal, int newVal) {
                 if (!is24Hour()) {
                     if ((oldVal == HOURS_IN_HALF_DAY - 1 && newVal == HOURS_IN_HALF_DAY) ||
                             (oldVal == HOURS_IN_HALF_DAY && newVal == HOURS_IN_HALF_DAY - 1)) {
@@ -106,10 +98,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
                 onTimeChanged();
             }
         });
-        mHourSpinnerInput = mHourSpinner.findViewById(R.id.numberpicker_input);
-        mHourSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        mHourSpinnerInput.setFilters(new InputFilter[0]);
-        mHourSpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         // divider (only for the new widget style)
         mDivider = mDelegator.findViewById(R.id.divider);
@@ -124,9 +112,8 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         mMinuteSpinner.setMinValue(0);
         mMinuteSpinner.setMaxValue(59);
         mMinuteSpinner.setOnLongPressUpdateInterval(100);
-        mMinuteSpinner.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            public void onValueChange(NumberPicker spinner, int oldVal, int newVal) {
-                updateInputState();
+        mMinuteSpinner.setOnValueChangedListener(new PickerView.OnValueChangeListener() {
+            public void onValueChange(PickerView spinner, int oldVal, int newVal) {
                 int minValue = mMinuteSpinner.getMinValue();
                 int maxValue = mMinuteSpinner.getMaxValue();
                 if (oldVal == maxValue && newVal == minValue) {
@@ -147,10 +134,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
                 onTimeChanged();
             }
         });
-        mMinuteSpinnerInput = mMinuteSpinner.findViewById(R.id.numberpicker_input);
-        mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        mMinuteSpinnerInput.setFilters(new InputFilter[0]);
-        mMinuteSpinner.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
         // Get the localized am/pm strings and use them in the spinner.
         mAmPmStrings = getAmPmStrings(context);
@@ -159,7 +142,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         final View amPmView = mDelegator.findViewById(R.id.amPm);
         if (amPmView instanceof Button) {
             mAmPmSpinner = null;
-            mAmPmSpinnerInput = null;
             mAmPmButton = (Button) amPmView;
             mAmPmButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View button) {
@@ -171,21 +153,18 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
             });
         } else {
             mAmPmButton = null;
-            mAmPmSpinner = (NumberPicker) amPmView;
+            mAmPmSpinner = (PickerView) amPmView;
             mAmPmSpinner.setMinValue(0);
             mAmPmSpinner.setMaxValue(1);
             mAmPmSpinner.setDisplayedValues(mAmPmStrings);
-            mAmPmSpinner.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    updateInputState();
+            mAmPmSpinner.setOnValueChangedListener(new PickerView.OnValueChangeListener() {
+                public void onValueChange(PickerView picker, int oldVal, int newVal) {
                     picker.requestFocus();
                     mIsAm = !mIsAm;
                     updateAmPmControl();
                     onTimeChanged();
                 }
             });
-            mAmPmSpinnerInput = mAmPmSpinner.findViewById(R.id.numberpicker_input);
-            mAmPmSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         }
 
         if (isAmPmAtStart()) {
@@ -209,7 +188,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
 
         // update controls to initial state
         updateHourControl();
-        updateMinuteControl();
         updateAmPmControl();
 
         // set to current time
@@ -379,7 +357,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         updateHourControl();
         // set value after spinner range is updated
         setCurrentHour(currentHour, false);
-        updateMinuteControl();
         updateAmPmControl();
     }
 
@@ -453,7 +430,7 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
      */
     @Override
     public View getHourView() {
-        return mHourSpinnerInput;
+        return mHourSpinner;
     }
 
     /**
@@ -461,7 +438,7 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
      */
     @Override
     public View getMinuteView() {
-        return mMinuteSpinnerInput;
+        return mMinuteSpinner;
     }
 
     /**
@@ -469,7 +446,7 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
      */
     @Override
     public View getAmView() {
-        return mAmPmSpinnerInput;
+        return mAmPmSpinner;
     }
 
     /**
@@ -477,28 +454,7 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
      */
     @Override
     public View getPmView() {
-        return mAmPmSpinnerInput;
-    }
-
-    private void updateInputState() {
-        // Make sure that if the user changes the value and the IME is active
-        // for one of the inputs if this widget, the IME is closed. If the user
-        // changed the value via the IME and there is a next input the IME will
-        // be shown, otherwise the user chose another means of changing the
-        // value and having the IME up makes no sense.
-        InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            if (inputMethodManager.isActive(mHourSpinnerInput)) {
-                mHourSpinnerInput.clearFocus();
-                inputMethodManager.hideSoftInputFromWindow(mDelegator.getWindowToken(), 0);
-            } else if (inputMethodManager.isActive(mMinuteSpinnerInput)) {
-                mMinuteSpinnerInput.clearFocus();
-                inputMethodManager.hideSoftInputFromWindow(mDelegator.getWindowToken(), 0);
-            } else if (inputMethodManager.isActive(mAmPmSpinnerInput)) {
-                mAmPmSpinnerInput.clearFocus();
-                inputMethodManager.hideSoftInputFromWindow(mDelegator.getWindowToken(), 0);
-            }
-        }
+        return mAmPmSpinner;
     }
 
     private void updateAmPmControl() {
@@ -554,14 +510,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         }
         // mHourSpinner.setFormatter(mHourWithTwoDigit ? NumberPicker.getTwoDigitFormatter() : null);
         mHourSpinner.setFormatter(sHourFormatter);
-    }
-
-    private void updateMinuteControl() {
-        if (is24Hour()) {
-            mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        } else {
-            mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
-        }
     }
 
     private void setContentDescriptions() {

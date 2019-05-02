@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2017 CHANGLEI. All rights reserved.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/timePickerLayout"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal"
+              android:orientation="horizontal"
+              android:paddingStart="8dip"
+              android:paddingEnd="8dip">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
+        android:orientation="horizontal"
+        android:paddingStart="8dip"
+        android:paddingEnd="8dip">
+
+        <!-- hour -->
+        <me.box.widget.picker.PickerView
+            android:id="@+id/hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dip"
+            android:layout_marginBottom="16dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+
+        <!-- divider -->
+        <TextView
+            android:id="@+id/divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dip"
+            android:layout_marginEnd="6dip"
+            android:importantForAccessibility="no"/>
+
+        <!-- minute -->
+        <me.box.widget.picker.PickerView
+            android:id="@+id/minute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dip"
+            android:layout_marginBottom="16dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+    </LinearLayout>
+
+    <!-- AM / PM -->
+    <me.box.widget.picker.PickerView
+        android:id="@+id/amPm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dip"
+        android:layout_marginTop="16dip"
+        android:layout_marginEnd="8dip"
+        android:layout_marginBottom="16dip"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+</LinearLayout>
