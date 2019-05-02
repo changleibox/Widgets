@@ -36,10 +36,12 @@
 
     <style name="AppTheme.DatePicker" parent="Widget.Material.DatePicker">
         <item name="legacyLayout">@layout/layout_date_picker_legacy_holo</item>
+        <item name="internalLayout">@layout/layout_date_picker_material_cn</item>
     </style>
 
     <style name="AppTheme.TimePicker" parent="Widget.Material.TimePicker">
         <item name="legacyLayout">@layout/layout_time_picker_legacy_holo</item>
+        <item name="internalLayout">@layout/layout_time_picker_material_cn</item>
     </style>
 
     <style name="AppTheme.PickerView" parent="Widget.Material.PickerView">
