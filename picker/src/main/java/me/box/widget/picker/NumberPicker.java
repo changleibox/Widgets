@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
@@ -473,6 +475,10 @@ public class NumberPicker extends LinearLayout {
     private final int mMiddleItemIndex;
 
     private final float mWheelItemOffset;
+
+    private float mMiddleItemY;
+
+    private float mMiddleItemOffsetY;
 
     /**
      * Interface to listen for changes of the current value.
@@ -1600,19 +1606,22 @@ public class NumberPicker extends LinearLayout {
         }
     }
 
+    private final Camera mCamera = new Camera();
+    private final Matrix mMatrix = new Matrix();
+
     @Override
     protected void onDraw(Canvas canvas) {
+        mCamera.applyToCanvas(canvas);
         if (!mHasSelectorWheel) {
             super.onDraw(canvas);
             return;
         }
         final boolean showSelectorWheel = !mHideWheelUntilFocused || hasFocus();
-        float x = (getRight() - getLeft()) / 2;
+        float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
 
         // draw the virtual buttons pressed state if needed
-        if (showSelectorWheel && mVirtualButtonPressedDrawable != null
-                && mScrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+        if (showSelectorWheel && mVirtualButtonPressedDrawable != null && mScrollState == OnScrollListener.SCROLL_STATE_IDLE) {
             if (mDecrementVirtualButtonPressed) {
                 mVirtualButtonPressedDrawable.setState(PRESSED_STATE_SET);
                 mVirtualButtonPressedDrawable.setBounds(0, 0, getRight(), mTopSelectionDividerTop);
@@ -1625,9 +1634,6 @@ public class NumberPicker extends LinearLayout {
             }
         }
 
-        final float currentScrollOffset = mCurrentScrollOffset;
-        final float initialScrollOffset = mInitialScrollOffset;
-        final float pullOffset = (currentScrollOffset - initialScrollOffset) / initialScrollOffset;
         // draw the selector wheel
         int[] selectorIndices = mSelectorIndices;
         for (int i = 0; i < selectorIndices.length; i++) {
@@ -1638,19 +1644,24 @@ public class NumberPicker extends LinearLayout {
             // item. Otherwise, if the user starts editing the text via the
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
-            final float initialTextSizeOffset = 1.0f - Math.abs(i - mMiddleItemIndex) * mWheelItemOffset;
-            final Paint paint = new Paint(mSelectorWheelPaint);
-            final float textSize = mSelectorWheelPaint.getTextSize() * initialTextSizeOffset;
-            final float textSizeOffset = (1.0f - initialTextSizeOffset) * Math.abs(pullOffset);
-            final float decreasing = textSize - textSize * textSizeOffset;
-            final float increased = textSize + textSize * textSizeOffset;
-            if (pullOffset > 0) {
-                paint.setTextSize(i > mMiddleItemIndex ? decreasing : i < mMiddleItemIndex ? increased : textSize);
-            } else {
-                paint.setTextSize(i > mMiddleItemIndex ? increased : i < mMiddleItemIndex ? decreasing : textSize);
-            }
+            final float centerY = y - mMiddleItemOffsetY;
+            final float scale = 1.f - Math.abs((centerY - mMiddleItemY) / mMiddleItemY);
+            final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
+            final float degree = 90 * ((mMiddleItemY - centerY) / mMiddleItemY);
+
+            mCamera.save();
+            // mCamera.rotateX(degree);
+            mCamera.getMatrix(mMatrix);
+            mMatrix.preTranslate(-x, -centerY);
+            mMatrix.postTranslate(x, centerY);
+            mMatrix.postScale(realScale, realScale, x, centerY);
+            mCamera.restore();
+
             if ((showSelectorWheel && i != mMiddleItemIndex) || (i == mMiddleItemIndex && mInputText.getVisibility() != VISIBLE)) {
-                canvas.drawText(scrollSelectorValue, x, y, paint);
+                canvas.save();
+                canvas.concat(mMatrix);
+                canvas.drawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
+                canvas.restore();
             }
             y += mSelectorElementHeight;
         }
@@ -1824,9 +1835,10 @@ public class NumberPicker extends LinearLayout {
         // Ensure that the middle item is positioned the same as the text in
         // mInputText
         int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
-        mInitialScrollOffset = editTextTextPosition
-                - (mSelectorElementHeight * mMiddleItemIndex);
+        mInitialScrollOffset = editTextTextPosition - (mSelectorElementHeight * mMiddleItemIndex);
         mCurrentScrollOffset = mInitialScrollOffset;
+        mMiddleItemY = (getBottom() - getTop()) / 2.f;
+        mMiddleItemOffsetY = mMiddleItemIndex * mSelectorElementHeight + mInitialScrollOffset - mMiddleItemY;
         updateInputTextView();
     }
 
