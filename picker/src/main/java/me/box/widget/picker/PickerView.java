@@ -1446,7 +1446,7 @@ public class PickerView extends LinearLayout {
             mCamera.getMatrix(mMatrix);
             mMatrix.preTranslate(-x, -centerY);
             mMatrix.postTranslate(x, centerY);
-            mMatrix.postScale(scale, 1.0f, x, centerY);
+            mMatrix.postScale(scale, scale, x, centerY);
             mCamera.restore();
 
             canvas.concat(mMatrix);
