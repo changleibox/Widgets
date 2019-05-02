@@ -43,11 +43,11 @@
     </style>
 
     <style name="AppTheme.PickerView" parent="Widget.Material.PickerView">
-        <item name="selectionDivider">@drawable/selection_numberpicker_divider</item>
-        <item name="selectionDividerHeight">1dp</item>
+        <!--<item name="selectionDivider">@drawable/selection_numberpicker_divider</item>-->
+        <!--<item name="selectionDividerHeight">2dp</item>-->
         <item name="wheelItemCount">5</item>
         <item name="internalMaxHeight">200dp</item>
-        <item name="selectionDividersDistance">40dp</item>
+        <item name="selectionDividersDistance">20dp</item>
         <item name="internalMinWidth">80dp</item>
         <item name="wheelItemOffset">0.3</item>
     </style>

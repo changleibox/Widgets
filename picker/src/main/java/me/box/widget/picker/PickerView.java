@@ -4,6 +4,7 @@
 
 package me.box.widget.picker;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -22,16 +23,14 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.text.InputType;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.NumberKeyListener;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.LayoutInflater.Filter;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -83,7 +82,7 @@ import java.util.Locale;
  * For an example of using this widget, see {@link android.widget.TimePicker}.
  * </p>
  */
-@SuppressWarnings("all")
+@SuppressWarnings({"SwitchStatementWithTooFewBranches", "UnusedReturnValue", "unused"})
 public class PickerView extends LinearLayout {
 
     /**
@@ -171,9 +170,6 @@ public class PickerView extends LinearLayout {
 
     private static final TwoDigitFormatter sTwoDigitFormatter = new TwoDigitFormatter();
 
-    /**
-     * @hide
-     */
     public static Formatter getTwoDigitFormatter() {
         return sTwoDigitFormatter;
     }
@@ -266,7 +262,7 @@ public class PickerView extends LinearLayout {
     /**
      * Cache for the string representation of selector indices.
      */
-    private final SparseArray<String> mSelectorIndexToStringCache = new SparseArray<String>();
+    private final SparseArray<String> mSelectorIndexToStringCache = new SparseArray<>();
 
     /**
      * The selector indices whose value are show by the selector.
@@ -307,11 +303,6 @@ public class PickerView extends LinearLayout {
      * The previous Y coordinate while scrolling the selector.
      */
     private int mPreviousScrollerY;
-
-    /**
-     * Handle to the reusable command for setting the input text selection.
-     */
-    private SetSelectionCommand mSetSelectionCommand;
 
     /**
      * Handle to the reusable command for changing the current value from long
@@ -462,9 +453,6 @@ public class PickerView extends LinearLayout {
      * Interface to listen for the picker scroll state.
      */
     public interface OnScrollListener {
-        /**
-         * @hide
-         */
         @IntDef(value = {
                 SCROLL_STATE_IDLE,
                 SCROLL_STATE_TOUCH_SCROLL,
@@ -639,12 +627,12 @@ public class PickerView extends LinearLayout {
         // draw() method to be called. Therefore, we declare we will draw.
         setWillNotDraw(false);
 
-        final LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(layoutResId, this, true);
 
         // input text
         mInputText = findViewById(R.id.picker_view_input);
-        mInputText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        ViewCompat.setAccessibilityLiveRegion(mInputText, View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         mInputText.setRawInputType(InputType.TYPE_CLASS_NUMBER);
         mInputText.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -736,11 +724,10 @@ public class PickerView extends LinearLayout {
         final float selectorElementHeight = mTextSize + selectorTextGapHeight;
         final int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
         final float initialScrollOffset = editTextTextPosition - (selectorElementHeight * mMiddleItemIndex);
-        final float currentScrollOffset = initialScrollOffset;
         final float middleItemY = heightSize / 2.f;
         final float middleItemOffsetY = mMiddleItemIndex * selectorElementHeight + initialScrollOffset - middleItemY;
         final Paint paint = new Paint(mSelectorWheelPaint);
-        paint.setTextSize(getMaxTextSize(currentScrollOffset, middleItemOffsetY, middleItemY, selectorElementHeight));
+        paint.setTextSize(getMaxTextSize(initialScrollOffset, middleItemOffsetY, middleItemY, selectorElementHeight));
         int maxWidth = tryComputeMaxWidth(paint);
         if (maxWidth <= Integer.MIN_VALUE) {
             maxWidth = mMaxWidth;
@@ -751,15 +738,7 @@ public class PickerView extends LinearLayout {
     private float getMaxTextSize(float currentScrollOffset, float middleItemOffsetY, float middleItemY, float selectorElementHeight) {
         float y = currentScrollOffset;
         float textSize = mTextSize;
-        final int[] selectorIndices = mSelectorIndices;
-        for (int i = 0; i < selectorIndices.length; i++) {
-            final int selectorIndex = selectorIndices[i];
-            final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
-            // Do not draw the middle item if input is visible since the input
-            // is shown only if the wheel is static and it covers the middle
-            // item. Otherwise, if the user starts editing the text via the
-            // IME he may see a dimmed version of the old value intermixed
-            // with the new one.
+        for (int i = 0; i < mSelectorIndices.length; i++) {
             final float centerY = y - middleItemOffsetY;
             final float scale = 1.f - Math.abs((centerY - middleItemY) / middleItemY);
             final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
@@ -852,6 +831,7 @@ public class PickerView extends LinearLayout {
         return false;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (!isEnabled()) {
@@ -985,7 +965,8 @@ public class PickerView extends LinearLayout {
 
     @Override
     protected boolean dispatchHoverEvent(MotionEvent event) {
-        if (((AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE)).isEnabled()) {
+        final AccessibilityManager service = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (service != null && service.isEnabled()) {
             final int eventY = (int) event.getY();
             final int hoveredVirtualViewId;
             if (eventY < mTopSelectionDividerTop) {
@@ -1211,9 +1192,8 @@ public class PickerView extends LinearLayout {
                 }
             }
         } else {
-            final int valueCount = mDisplayedValues.length;
-            for (int i = 0; i < valueCount; i++) {
-                final float textWidth = paint.measureText(mDisplayedValues[i]);
+            for (String mDisplayedValue : mDisplayedValues) {
+                final float textWidth = paint.measureText(mDisplayedValue);
                 if (textWidth > maxTextWidth) {
                     maxTextWidth = (int) textWidth;
                 }
@@ -1481,9 +1461,7 @@ public class PickerView extends LinearLayout {
         float y = mCurrentScrollOffset;
 
         // draw the selector wheel
-        final int[] selectorIndices = mSelectorIndices;
-        for (int i = 0; i < selectorIndices.length; i++) {
-            final int selectorIndex = selectorIndices[i];
+        for (final int selectorIndex : mSelectorIndices) {
             final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
             // Do not draw the middle item if input is visible since the input
             // is shown only if the wheel is static and it covers the middle
@@ -1499,8 +1477,8 @@ public class PickerView extends LinearLayout {
             mCamera.save();
             mCamera.rotateX(degree);
             mCamera.getMatrix(mMatrix);
-            mMatrix.preTranslate(-x, -centerY);
-            mMatrix.postTranslate(x, centerY);
+            mMatrix.preTranslate(-x, -y);
+            mMatrix.postTranslate(x, y);
             mMatrix.postScale(realScale, realScale, x, centerY);
             mCamera.restore();
 
@@ -1664,7 +1642,7 @@ public class PickerView extends LinearLayout {
         final int totalTextHeight = selectorIndices.length * mTextSize;
         final float totalTextGapHeight = (getBottom() - getTop()) - totalTextHeight;
         final float textGapCount = selectorIndices.length;
-        mSelectorTextGapHeight = (int) (totalTextGapHeight / textGapCount + 0.5f);
+        mSelectorTextGapHeight = (int) (totalTextGapHeight / textGapCount);
         mSelectorElementHeight = mTextSize + mSelectorTextGapHeight;
         // Ensure that the middle item is positioned the same as the text in
         // mInputText
@@ -1741,8 +1719,8 @@ public class PickerView extends LinearLayout {
      * will be displayed in the selector.
      */
     private void incrementSelectorIndices(int[] selectorIndices) {
-        for (int i = 0; i < selectorIndices.length - 1; i++) {
-            selectorIndices[i] = selectorIndices[i + 1];
+        if (selectorIndices.length - 1 >= 0) {
+            System.arraycopy(selectorIndices, 1, selectorIndices, 0, selectorIndices.length - 1);
         }
         int nextScrollSelectorIndex = selectorIndices[selectorIndices.length - 2] + 1;
         if (mWrapSelectorWheel && nextScrollSelectorIndex > mMaxValue) {
@@ -1757,8 +1735,8 @@ public class PickerView extends LinearLayout {
      * will be displayed in the selector.
      */
     private void decrementSelectorIndices(int[] selectorIndices) {
-        for (int i = selectorIndices.length - 1; i > 0; i--) {
-            selectorIndices[i] = selectorIndices[i - 1];
+        if (selectorIndices.length - 1 >= 0) {
+            System.arraycopy(selectorIndices, 0, selectorIndices, 1, selectorIndices.length - 1);
         }
         int nextScrollSelectorIndex = selectorIndices[1] - 1;
         if (mWrapSelectorWheel && nextScrollSelectorIndex < mMinValue) {
@@ -1795,18 +1773,6 @@ public class PickerView extends LinearLayout {
         return (mFormatter != null) ? mFormatter.format(value) : formatNumberWithLocale(value);
     }
 
-    private void validateInputTextView(View v) {
-        String str = String.valueOf(((TextView) v).getText());
-        if (TextUtils.isEmpty(str)) {
-            // Restore to the old value as we don't allow empty values
-            updateInputTextView();
-        } else {
-            // Check the new value and ensure it's in range
-            int current = getSelectedPos(str);
-            setValueInternal(current, true);
-        }
-    }
-
     /**
      * Updates the view of this PickerView. If displayValues were specified in
      * the string corresponding to the index specified by the current value will
@@ -1821,23 +1787,21 @@ public class PickerView extends LinearLayout {
          * find the correct value in the displayed values for the current
          * number.
          */
-        String text = (mDisplayedValues == null) ? formatNumber(mValue)
-                : mDisplayedValues[mValue - mMinValue];
+        String text = (mDisplayedValues == null) ? formatNumber(mValue) : mDisplayedValues[mValue - mMinValue];
         if (!TextUtils.isEmpty(text)) {
             CharSequence beforeText = mInputText.getText();
             if (!text.equals(beforeText.toString())) {
                 mInputText.setText(text);
-                if (((AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE)).isEnabled()) {
-                    AccessibilityEvent event = AccessibilityEvent.obtain(
-                            AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
+                final AccessibilityManager service = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+                if (service != null && service.isEnabled()) {
+                    AccessibilityEvent event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
                     mInputText.onInitializeAccessibilityEvent(event);
                     mInputText.onPopulateAccessibilityEvent(event);
                     event.setFromIndex(0);
                     event.setRemovedCount(beforeText.length());
                     event.setAddedCount(text.length());
                     event.setBeforeText(beforeText);
-                    event.setSource(PickerView.this,
-                            AccessibilityNodeProviderImpl.VIRTUAL_VIEW_ID_INPUT);
+                    event.setSource(PickerView.this, AccessibilityNodeProviderImpl.VIRTUAL_VIEW_ID_INPUT);
                     requestSendAccessibilityEvent(PickerView.this, event);
                 }
                 return true;
@@ -1910,152 +1874,10 @@ public class PickerView extends LinearLayout {
         if (mChangeCurrentByOneFromLongPressCommand != null) {
             removeCallbacks(mChangeCurrentByOneFromLongPressCommand);
         }
-        if (mSetSelectionCommand != null) {
-            mSetSelectionCommand.cancel();
-        }
         if (mBeginSoftInputOnLongPressCommand != null) {
             removeCallbacks(mBeginSoftInputOnLongPressCommand);
         }
         mPressedStateHelper.cancel();
-    }
-
-    /**
-     * @return The selected index given its displayed <code>value</code>.
-     */
-    private int getSelectedPos(String value) {
-        if (mDisplayedValues == null) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                // Ignore as if it's not a number we don't care
-            }
-        } else {
-            for (int i = 0; i < mDisplayedValues.length; i++) {
-                // Don't force the user to type in jan when ja will do
-                value = value.toLowerCase();
-                if (mDisplayedValues[i].toLowerCase().startsWith(value)) {
-                    return mMinValue + i;
-                }
-            }
-
-            /*
-             * The user might have typed in a number into the month field i.e.
-             * 10 instead of OCT so support that too.
-             */
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-
-                // Ignore as if it's not a number we don't care
-            }
-        }
-        return mMinValue;
-    }
-
-    /**
-     * Posts a {@link SetSelectionCommand} from the given
-     * {@code selectionStart} to {@code selectionEnd}.
-     */
-    private void postSetSelectionCommand(int selectionStart, int selectionEnd) {
-        if (mSetSelectionCommand == null) {
-            mSetSelectionCommand = new SetSelectionCommand(mInputText);
-        }
-        mSetSelectionCommand.post(selectionStart, selectionEnd);
-    }
-
-    /**
-     * The numbers accepted by the input text's {@link Filter}
-     */
-    private static final char[] DIGIT_CHARACTERS = new char[]{
-            // Latin digits are the common case
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            // Arabic-Indic
-            '\u0660', '\u0661', '\u0662', '\u0663', '\u0664', '\u0665', '\u0666', '\u0667', '\u0668'
-            , '\u0669',
-            // Extended Arabic-Indic
-            '\u06f0', '\u06f1', '\u06f2', '\u06f3', '\u06f4', '\u06f5', '\u06f6', '\u06f7', '\u06f8'
-            , '\u06f9',
-            // Hindi and Marathi (Devanagari script)
-            '\u0966', '\u0967', '\u0968', '\u0969', '\u096a', '\u096b', '\u096c', '\u096d', '\u096e'
-            , '\u096f',
-            // Bengali
-            '\u09e6', '\u09e7', '\u09e8', '\u09e9', '\u09ea', '\u09eb', '\u09ec', '\u09ed', '\u09ee'
-            , '\u09ef',
-            // Kannada
-            '\u0ce6', '\u0ce7', '\u0ce8', '\u0ce9', '\u0cea', '\u0ceb', '\u0cec', '\u0ced', '\u0cee'
-            , '\u0cef'
-    };
-
-    /**
-     * Filter for accepting only valid indices or prefixes of the string
-     * representation of valid indices.
-     */
-    class InputTextFilter extends NumberKeyListener {
-
-        // XXX This doesn't allow for range limits when controlled by a
-        // soft input method!
-        public int getInputType() {
-            return InputType.TYPE_CLASS_TEXT;
-        }
-
-        @Override
-        protected char[] getAcceptedChars() {
-            return DIGIT_CHARACTERS;
-        }
-
-        @Override
-        public CharSequence filter(
-                CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-            // We don't know what the output will be, so always cancel any
-            // pending set selection command.
-            if (mSetSelectionCommand != null) {
-                mSetSelectionCommand.cancel();
-            }
-
-            if (mDisplayedValues == null) {
-                CharSequence filtered = super.filter(source, start, end, dest, dstart, dend);
-                if (filtered == null) {
-                    filtered = source.subSequence(start, end);
-                }
-
-                String result = String.valueOf(dest.subSequence(0, dstart)) + filtered
-                        + dest.subSequence(dend, dest.length());
-
-                if ("".equals(result)) {
-                    return result;
-                }
-                int val = getSelectedPos(result);
-
-                /*
-                 * Ensure the user can't type in a value greater than the max
-                 * allowed. We have to allow less than min as the user might
-                 * want to delete some numbers and then type a new number.
-                 * And prevent multiple-"0" that exceeds the length of upper
-                 * bound number.
-                 */
-                if (val > mMaxValue || result.length() > String.valueOf(mMaxValue).length()) {
-                    return "";
-                } else {
-                    return filtered;
-                }
-            } else {
-                CharSequence filtered = String.valueOf(source.subSequence(start, end));
-                if (TextUtils.isEmpty(filtered)) {
-                    return "";
-                }
-                String result = String.valueOf(dest.subSequence(0, dstart)) + filtered
-                        + dest.subSequence(dend, dest.length());
-                String str = result.toLowerCase();
-                for (String val : mDisplayedValues) {
-                    String valLowerCase = val.toLowerCase();
-                    if (valLowerCase.startsWith(str)) {
-                        postSetSelectionCommand(result.length(), val.length());
-                        return val.subSequence(dstart, val.length());
-                    }
-                }
-                return "";
-            }
-        }
     }
 
     /**
@@ -2080,8 +1902,8 @@ public class PickerView extends LinearLayout {
     }
 
     class PressedStateHelper implements Runnable {
-        public static final int BUTTON_INCREMENT = 1;
-        public static final int BUTTON_DECREMENT = 2;
+        static final int BUTTON_INCREMENT = 1;
+        static final int BUTTON_DECREMENT = 2;
 
         private final int MODE_PRESS = 1;
         private final int MODE_TAPPED = 2;
@@ -2091,12 +1913,12 @@ public class PickerView extends LinearLayout {
         private int mRight;
         private int mBottom;
 
-        public PressedStateHelper() {
+        PressedStateHelper() {
             mRight = getRight();
             mBottom = getBottom();
         }
 
-        public void cancel() {
+        void cancel() {
             mMode = 0;
             mManagedButton = 0;
             PickerView.this.removeCallbacks(this);
@@ -2105,19 +1927,16 @@ public class PickerView extends LinearLayout {
                 invalidate(0, mBottomSelectionDividerBottom, mRight, mBottom);
             }
             mDecrementVirtualButtonPressed = false;
-            if (mDecrementVirtualButtonPressed) {
-                invalidate(0, 0, mRight, mTopSelectionDividerTop);
-            }
         }
 
-        public void buttonPressDelayed(int button) {
+        void buttonPressDelayed(int button) {
             cancel();
             mMode = MODE_PRESS;
             mManagedButton = button;
             PickerView.this.postDelayed(this, ViewConfiguration.getTapTimeout());
         }
 
-        public void buttonTapped(int button) {
+        void buttonTapped(int button) {
             cancel();
             mMode = MODE_TAPPED;
             mManagedButton = button;
@@ -2164,48 +1983,6 @@ public class PickerView extends LinearLayout {
                 }
                 break;
             }
-        }
-    }
-
-    /**
-     * Command for setting the input text selection.
-     */
-    private static class SetSelectionCommand implements Runnable {
-        private final TextView mInputText;
-
-        private int mSelectionStart;
-        private int mSelectionEnd;
-
-        /**
-         * Whether this runnable is currently posted.
-         */
-        private boolean mPosted;
-
-        public SetSelectionCommand(TextView inputText) {
-            mInputText = inputText;
-        }
-
-        public void post(int selectionStart, int selectionEnd) {
-            mSelectionStart = selectionStart;
-            mSelectionEnd = selectionEnd;
-
-            if (!mPosted) {
-                mInputText.post(this);
-                mPosted = true;
-            }
-        }
-
-        public void cancel() {
-            if (mPosted) {
-                mInputText.removeCallbacks(this);
-                mPosted = false;
-            }
-        }
-
-        @Override
-        public void run() {
-            mPosted = false;
-            // mInputText.setSelection(mSelectionStart, mSelectionEnd);
         }
     }
 
@@ -2261,7 +2038,7 @@ public class PickerView extends LinearLayout {
         private int mScrollX;
         private int mScrollY;
 
-        public AccessibilityNodeProviderImpl() {
+        AccessibilityNodeProviderImpl() {
             mRight = getRight();
             mBottom = getBottom();
             mLeft = getLeft();
@@ -2301,7 +2078,7 @@ public class PickerView extends LinearLayout {
                 return Collections.emptyList();
             }
             String searchedLowerCase = searched.toLowerCase();
-            List<AccessibilityNodeInfo> result = new ArrayList<AccessibilityNodeInfo>();
+            List<AccessibilityNodeInfo> result = new ArrayList<>();
             switch (virtualViewId) {
                 case View.NO_ID: {
                     findAccessibilityNodeInfosByTextInChild(searchedLowerCase, VIRTUAL_VIEW_ID_DECREMENT, result);
@@ -2445,7 +2222,7 @@ public class PickerView extends LinearLayout {
                     switch (action) {
                         case AccessibilityNodeInfo.ACTION_CLICK: {
                             if (PickerView.this.isEnabled()) {
-                                final boolean increment = (virtualViewId == VIRTUAL_VIEW_ID_INCREMENT);
+                                final boolean increment = false;
                                 PickerView.this.changeValueByOne(increment);
                                 sendAccessibilityEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_CLICKED);
                                 return true;
@@ -2477,7 +2254,7 @@ public class PickerView extends LinearLayout {
             return super.performAction(virtualViewId, action, arguments);
         }
 
-        public void sendAccessibilityEventForVirtualView(int virtualViewId, int eventType) {
+        private void sendAccessibilityEventForVirtualView(int virtualViewId, int eventType) {
             switch (virtualViewId) {
                 case VIRTUAL_VIEW_ID_DECREMENT: {
                     if (hasVirtualDecrementButton()) {
@@ -2499,7 +2276,8 @@ public class PickerView extends LinearLayout {
         }
 
         private void sendAccessibilityEventForVirtualText(int eventType) {
-            if (((AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE)).isEnabled()) {
+            final AccessibilityManager service = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            if (service != null && service.isEnabled()) {
                 AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
                 mInputText.onInitializeAccessibilityEvent(event);
                 mInputText.onPopulateAccessibilityEvent(event);
@@ -2509,7 +2287,8 @@ public class PickerView extends LinearLayout {
         }
 
         private void sendAccessibilityEventForVirtualButton(int virtualViewId, int eventType, String text) {
-            if (((AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE)).isEnabled()) {
+            final AccessibilityManager service = (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+            if (service != null && service.isEnabled()) {
                 AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
                 event.setClassName(Button.class.getName());
                 event.setPackageName(getContext().getPackageName());
@@ -2528,7 +2307,7 @@ public class PickerView extends LinearLayout {
                         outResult.add(createAccessibilityNodeInfo(VIRTUAL_VIEW_ID_DECREMENT));
                     }
                 }
-                return;
+                break;
                 case VIRTUAL_VIEW_ID_INPUT: {
                     CharSequence text = mInputText.getText();
                     if (!TextUtils.isEmpty(text) && text.toString().toLowerCase().contains(searchedLowerCase)) {
@@ -2548,7 +2327,7 @@ public class PickerView extends LinearLayout {
                         outResult.add(createAccessibilityNodeInfo(VIRTUAL_VIEW_ID_INCREMENT));
                     }
                 }
-                return;
+                break;
             }
         }
 
@@ -2565,11 +2344,10 @@ public class PickerView extends LinearLayout {
             boundsInParent.set(left, top, right, bottom);
             info.setVisibleToUser(isVisibleToUser(boundsInParent));
             info.setBoundsInParent(boundsInParent);
-            Rect boundsInScreen = boundsInParent;
             int[] locationOnScreen = mTempArray;
             getLocationOnScreen(locationOnScreen);
-            boundsInScreen.offset(locationOnScreen[0], locationOnScreen[1]);
-            info.setBoundsInScreen(boundsInScreen);
+            boundsInParent.offset(locationOnScreen[0], locationOnScreen[1]);
+            info.setBoundsInScreen(boundsInParent);
             return info;
         }
 
@@ -2587,11 +2365,10 @@ public class PickerView extends LinearLayout {
             boundsInParent.set(left, top, right, bottom);
             info.setVisibleToUser(isVisibleToUser(boundsInParent));
             info.setBoundsInParent(boundsInParent);
-            Rect boundsInScreen = boundsInParent;
             int[] locationOnScreen = mTempArray;
             getLocationOnScreen(locationOnScreen);
-            boundsInScreen.offset(locationOnScreen[0], locationOnScreen[1]);
-            info.setBoundsInScreen(boundsInScreen);
+            boundsInParent.offset(locationOnScreen[0], locationOnScreen[1]);
+            info.setBoundsInScreen(boundsInParent);
 
             if (mAccessibilityFocusedView != virtualViewId) {
                 info.addAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS);
@@ -2632,11 +2409,10 @@ public class PickerView extends LinearLayout {
 
             info.setVisibleToUser(isVisibleToUser(boundsInParent));
 
-            Rect boundsInScreen = boundsInParent;
             int[] locationOnScreen = mTempArray;
             getLocationOnScreen(locationOnScreen);
-            boundsInScreen.offset(locationOnScreen[0], locationOnScreen[1]);
-            info.setBoundsInScreen(scale(boundsInScreen, applicationScale));
+            boundsInParent.offset(locationOnScreen[0], locationOnScreen[1]);
+            info.setBoundsInScreen(scale(boundsInParent, applicationScale));
 
             if (mAccessibilityFocusedView != View.NO_ID) {
                 info.addAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS);
@@ -2688,14 +2464,14 @@ public class PickerView extends LinearLayout {
 
         private boolean isVisibleToUser(Rect localRect) {
             if (localRect != null && !localRect.isEmpty()) {
-                if (getWindowVisibility() != 0) {
+                if (getWindowVisibility() != View.VISIBLE) {
                     return false;
                 } else {
                     ViewParent viewParent;
                     View view;
                     for (viewParent = getParent(); viewParent instanceof View; viewParent = view.getParent()) {
                         view = (View) viewParent;
-                        if (view.getAlpha() <= 0.0F || view.getVisibility() != 0) {
+                        if (view.getAlpha() <= 0.0F || view.getVisibility() != View.VISIBLE) {
                             return false;
                         }
                     }
