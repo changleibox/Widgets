@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -61,6 +64,8 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
     private boolean mIs24HourView;
     private boolean mIsAm;
 
+    private final List<NumberPicker> mSpinners = new ArrayList<>();
+
     public TimePickerSpinnerDelegate(TimePicker delegator, Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(delegator, context);
 
@@ -92,6 +97,7 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
         });
         mHourSpinnerInput = mHourSpinner.findViewById(R.id.numberpicker_input);
         mHourSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        mSpinners.add(mHourSpinner);
 
         // divider (only for the new widget style)
         mDivider = mDelegator.findViewById(R.id.divider);
@@ -130,6 +136,7 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
         });
         mMinuteSpinnerInput = mMinuteSpinner.findViewById(R.id.numberpicker_input);
         mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        mSpinners.add(mMinuteSpinner);
 
         // Get the localized am/pm strings and use them in the spinner.
         mAmPmStrings = getAmPmStrings(context);
@@ -165,6 +172,7 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
             });
             mAmPmSpinnerInput = mAmPmSpinner.findViewById(R.id.numberpicker_input);
             mAmPmSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            mSpinners.add(mAmPmSpinner);
         }
 
         if (isAmPmAtStart()) {
@@ -174,14 +182,30 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
             amPmParent.addView(amPmView, 0);
             // Swap layout margins if needed. They may be not symmetrical (Old Standard Theme
             // for example and not for Holo Theme)
-            ViewGroup.MarginLayoutParams lp =
-                    (ViewGroup.MarginLayoutParams) amPmView.getLayoutParams();
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) amPmView.getLayoutParams();
             final int startMargin = lp.getMarginStart();
             final int endMargin = lp.getMarginEnd();
             if (startMargin != endMargin) {
                 lp.setMarginStart(endMargin);
                 lp.setMarginEnd(startMargin);
             }
+            if (mAmPmSpinnerInput != null) {
+                mAmPmSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            }
+            if (mMinuteSpinnerInput != null) {
+                mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            }
+
+            if (mAmPmSpinner != null) {
+                mSpinners.remove(mAmPmSpinner);
+                mSpinners.add(0, mAmPmSpinner);
+            }
+        }
+
+        final int spinnerCount = mSpinners.size();
+        for (int i = 0; i < spinnerCount; i++) {
+            final NumberPicker picker = mSpinners.get(i);
+            setImeOptions(picker, spinnerCount, i);
         }
 
         getHourFormatData();
@@ -534,7 +558,7 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
     }
 
     private void updateMinuteControl() {
-        if (is24Hour()) {
+        if (is24Hour() || mAmPmSpinner == null || isAmPmAtStart()) {
             mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_DONE);
         } else {
             mMinuteSpinnerInput.setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -574,6 +598,36 @@ class TimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate {
         // LocaleData d = LocaleData.get(locale);
         // result[0] = d.amPm[0].length() > 4 ? d.narrowAm : d.amPm[0];
         // result[1] = d.amPm[1].length() > 4 ? d.narrowPm : d.amPm[1];
-        return locale == Locale.CHINA ? new String[]{"上午", "下午"} : new String[]{"AM", "PM"};
+        return locale.getCountry().equals(Locale.CHINA.getCountry()) ? new String[]{"上午", "下午"} : new String[]{"AM", "PM"};
+    }
+
+    /**
+     * Sets the IME options for a spinner based on its ordering.
+     *
+     * @param spinner      The spinner.
+     * @param spinnerCount The total spinner count.
+     * @param spinnerIndex The index of the given spinner.
+     */
+    private void setImeOptions(final NumberPicker spinner, int spinnerCount, final int spinnerIndex) {
+        final int imeOptions;
+        if (spinnerIndex < spinnerCount - 1) {
+            imeOptions = EditorInfo.IME_ACTION_NEXT;
+        } else {
+            imeOptions = EditorInfo.IME_ACTION_DONE;
+        }
+        final int numberpickerInputId = R.id.numberpicker_input;
+        TextView input = (TextView) spinner.findViewById(numberpickerInputId);
+        input.setImeOptions(imeOptions);
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                switch (v.getImeOptions()) {
+                    case EditorInfo.IME_ACTION_NEXT:
+                        mSpinners.get(spinnerIndex + 1).performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 }

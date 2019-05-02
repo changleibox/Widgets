@@ -597,6 +597,6 @@ class CNTimePickerSpinnerDelegate extends TimePicker.AbstractTimePickerDelegate 
         // LocaleData d = LocaleData.get(locale);
         // result[0] = d.amPm[0].length() > 4 ? d.narrowAm : d.amPm[0];
         // result[1] = d.amPm[1].length() > 4 ? d.narrowPm : d.amPm[1];
-        return locale == Locale.CHINA ? new String[]{"上午", "下午"} : new String[]{"AM", "PM"};
+        return locale.getCountry().equals(Locale.CHINA.getCountry()) ? new String[]{"上午", "下午"} : new String[]{"AM", "PM"};
     }
 }

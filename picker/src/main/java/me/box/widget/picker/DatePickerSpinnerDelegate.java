@@ -12,6 +12,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -581,7 +582,7 @@ class DatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate {
      * @param spinnerCount The total spinner count.
      * @param spinnerIndex The index of the given spinner.
      */
-    private void setImeOptions(NumberPicker spinner, int spinnerCount, int spinnerIndex) {
+    private void setImeOptions(final NumberPicker spinner, int spinnerCount, final int spinnerIndex) {
         final int imeOptions;
         if (spinnerIndex < spinnerCount - 1) {
             imeOptions = EditorInfo.IME_ACTION_NEXT;
@@ -591,6 +592,17 @@ class DatePickerSpinnerDelegate extends DatePicker.AbstractDatePickerDelegate {
         final int numberpickerInputId = R.id.numberpicker_input;
         TextView input = (TextView) spinner.findViewById(numberpickerInputId);
         input.setImeOptions(imeOptions);
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                switch (v.getImeOptions()) {
+                    case EditorInfo.IME_ACTION_NEXT:
+                        mSpinners.getChildAt(spinnerIndex + 1).performClick();
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void setContentDescriptions() {
