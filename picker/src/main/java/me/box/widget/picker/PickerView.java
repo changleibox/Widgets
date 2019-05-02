@@ -1472,13 +1472,13 @@ public class PickerView extends LinearLayout {
             final float scale = 1.f - Math.abs((centerY - mMiddleItemY) / mMiddleItemY);
             final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
             final float degreeScale = (mMiddleItemY - centerY) / mMiddleItemY;
-            final float degree = 90 * degreeScale * mWheelItemOffset;
+            final float degree = 90 * mWheelItemOffset * degreeScale;
 
             mCamera.save();
             mCamera.rotateX(degree);
             mCamera.getMatrix(mMatrix);
-            mMatrix.preTranslate(-x, -y);
-            mMatrix.postTranslate(x, y);
+            mMatrix.preTranslate(-x, -centerY);
+            mMatrix.postTranslate(x, centerY);
             mMatrix.postScale(realScale, realScale, x, centerY);
             mCamera.restore();
 
@@ -1640,10 +1640,10 @@ public class PickerView extends LinearLayout {
         initializeSelectorWheelIndices();
         final int[] selectorIndices = mSelectorIndices;
         final int totalTextHeight = selectorIndices.length * mTextSize;
-        final float measuredHeight = getMeasuredHeight();
-        final float totalTextGapHeight = measuredHeight - totalTextHeight;
-        final float textGapCount = selectorIndices.length;
-        mSelectorTextGapHeight = (int) (totalTextGapHeight / textGapCount);
+        final int measuredHeight = getMeasuredHeight();
+        float totalTextGapHeight = measuredHeight - totalTextHeight;
+        float textGapCount = selectorIndices.length;
+        mSelectorTextGapHeight = (int) (totalTextGapHeight / textGapCount + 0.5f);
         mSelectorElementHeight = mTextSize + mSelectorTextGapHeight;
         // Ensure that the middle item is positioned the same as the text in
         // mInputText
@@ -1651,7 +1651,7 @@ public class PickerView extends LinearLayout {
         mInitialScrollOffset = editTextTextPosition - (mSelectorElementHeight * mMiddleItemIndex);
         mCurrentScrollOffset = mInitialScrollOffset;
         mMiddleItemY = measuredHeight / 2.f;
-        mMiddleItemOffsetY = mTextSize >> 1;
+        mMiddleItemOffsetY = mMiddleItemIndex * mSelectorElementHeight + mInitialScrollOffset - mMiddleItemY;
         updateInputTextView();
     }
 
