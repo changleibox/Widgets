@@ -17,8 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import me.box.widget.picker.CNDatePicker;
-import me.box.widget.picker.CNTimePicker;
 import me.box.widget.picker.DatePicker;
 import me.box.widget.picker.PickerView;
 import me.box.widget.picker.TimePicker;
@@ -78,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final CNDatePicker datePicker = findViewById(R.id.date_picker);
-        final CNTimePicker timePicker = findViewById(R.id.time_picker);
+        final DatePicker datePicker = findViewById(R.id.date_picker);
+        final TimePicker timePicker = findViewById(R.id.time_picker);
         final TextView tvTime = findViewById(R.id.tv_time);
 
         mCurrentDate.set(Calendar.YEAR, datePicker.getYear());

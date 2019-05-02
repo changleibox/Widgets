@@ -10,10 +10,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!--<item name="numberPickerStyle">@style/AppTheme.NumberPicker</item>-->
-        <!--<item name="datePickerStyle">@style/AppTheme.DatePicker</item>-->
-        <!--<item name="timePickerStyle">@style/AppTheme.TimePicker</item>-->
-        <!--<item name="pickerViewStyle">@style/AppTheme.PickerView</item>-->
+        <item name="numberPickerStyle">@style/AppTheme.NumberPicker</item>
+        <item name="datePickerStyle">@style/AppTheme.DatePicker</item>
+        <item name="timePickerStyle">@style/AppTheme.TimePicker</item>
+        <item name="pickerViewStyle">@style/AppTheme.PickerView</item>
     </style>
 
     <style name="TextAppearance.Material.NumberPicker" parent="TextAppearance.Large.Inverse.NumberPickerInputText">
