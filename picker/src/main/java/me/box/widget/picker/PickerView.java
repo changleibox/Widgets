@@ -1437,13 +1437,11 @@ public class PickerView extends LinearLayout {
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
             final float centerY = y - mMiddleItemOffsetY;
-            float scale = 0.f;
+            final float scale = 1.f - Math.abs(centerY / mMiddleItemY - 1.f);
             float degree = 0.f;
             if (centerY <= mMiddleItemY) {
-                scale = centerY / mMiddleItemY;
                 degree = 90 * (1.f - scale);
             } else {
-                scale = 2.f - centerY / mMiddleItemY;
                 degree = -90 * (1.f - scale);
             }
 
