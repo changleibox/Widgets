@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Camera;
 import android.graphics.Canvas;
@@ -17,12 +16,11 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -82,7 +80,7 @@ import java.util.Locale;
  * For an example of using this widget, see {@link android.widget.TimePicker}.
  * </p>
  */
-@SuppressWarnings({"SwitchStatementWithTooFewBranches", "UnusedReturnValue", "unused"})
+@SuppressWarnings({"SwitchStatementWithTooFewBranches", "UnusedReturnValue", "unused", "SuspiciousNameCombination"})
 public class PickerView extends LinearLayout {
 
     /**
@@ -113,7 +111,7 @@ public class PickerView extends LinearLayout {
     /**
      * The strength of fading in the top and bottom while drawing the selector.
      */
-    private static final float TOP_AND_BOTTOM_FADING_EDGE_STRENGTH = 0.9f;
+    private static final float TOP_AND_BOTTOM_FADING_EDGE_STRENGTH = 0.0f;
 
     /**
      * The default unscaled height of the selection divider.
@@ -274,6 +272,9 @@ public class PickerView extends LinearLayout {
      */
     private final Paint mSelectorWheelPaint;
 
+    @Nullable
+    private final Paint mSelectionDividerPaint;
+
     /**
      * The height of a selector element (text + gap).
      */
@@ -359,11 +360,6 @@ public class PickerView extends LinearLayout {
      * The back ground color used to optimize scroller fading.
      */
     private final int mSolidColor;
-
-    /**
-     * Divider for showing item to be selected while scrolling
-     */
-    private final Drawable mSelectionDivider;
 
     /**
      * The height of the selection divider.
@@ -560,19 +556,6 @@ public class PickerView extends LinearLayout {
 
         mSolidColor = attributesArray.getColor(R.styleable.PickerView_solidColor, 0);
 
-        final Drawable selectionDivider = attributesArray.getDrawable(
-                R.styleable.PickerView_selectionDivider);
-        if (selectionDivider != null) {
-            selectionDivider.setCallback(this);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                selectionDivider.setLayoutDirection(getLayoutDirection());
-            }
-            if (selectionDivider.isStateful()) {
-                selectionDivider.setState(getDrawableState());
-            }
-        }
-        mSelectionDivider = selectionDivider;
-
         final int defSelectionDividerHeight = (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, UNSCALED_DEFAULT_SELECTION_DIVIDER_HEIGHT,
                 getResources().getDisplayMetrics());
@@ -617,6 +600,18 @@ public class PickerView extends LinearLayout {
         mWheelItemOffset = attributesArray.getFloat(R.styleable.PickerView_wheelItemOffset, 0.0f);
         if (mWheelItemOffset > 1 || mWheelItemOffset < -1) {
             throw new IllegalArgumentException("The range of wheelItemOffset is [-1, 1].");
+        }
+
+        final int selectionDividerColor = attributesArray.getColor(
+                R.styleable.PickerView_selectionDividerColor, 0);
+
+        if (selectionDividerColor != 0) {
+            mSelectionDividerPaint = new Paint();
+            mSelectionDividerPaint.setAntiAlias(true);
+            mSelectionDividerPaint.setColor(selectionDividerColor);
+            mSelectionDividerPaint.setStrokeWidth(mSelectionDividerHeight);
+        } else {
+            mSelectionDividerPaint = null;
         }
 
         attributesArray.recycle();
@@ -698,10 +693,8 @@ public class PickerView extends LinearLayout {
             // need to do all this when we know our size
             initializeSelectorWheel();
             initializeFadingEdges();
-            mTopSelectionDividerTop = (getHeight() - mSelectionDividersDistance) / 2
-                    - mSelectionDividerHeight;
-            mBottomSelectionDividerBottom = mTopSelectionDividerTop + 2 * mSelectionDividerHeight
-                    + mSelectionDividersDistance;
+            mTopSelectionDividerTop = (getHeight() - mSelectionDividersDistance) / 2 - mSelectionDividerHeight;
+            mBottomSelectionDividerBottom = (getHeight() + mSelectionDividersDistance) / 2 + mSelectionDividerHeight;
         }
     }
 
@@ -1421,39 +1414,6 @@ public class PickerView extends LinearLayout {
         removeAllCallbacks();
     }
 
-    @CallSuper
-    @Override
-    protected void drawableStateChanged() {
-        super.drawableStateChanged();
-
-        final Drawable selectionDivider = mSelectionDivider;
-        if (selectionDivider != null && selectionDivider.isStateful()
-                && selectionDivider.setState(getDrawableState())) {
-            invalidateDrawable(selectionDivider);
-        }
-    }
-
-    @CallSuper
-    @Override
-    public void jumpDrawablesToCurrentState() {
-        super.jumpDrawablesToCurrentState();
-
-        if (mSelectionDivider != null) {
-            mSelectionDivider.jumpToCurrentState();
-        }
-    }
-
-    @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        if (mSelectionDivider != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mSelectionDivider.setLayoutDirection(newConfig.getLayoutDirection());
-            }
-        }
-    }
-
     private final Camera mCamera = new Camera();
     private final Matrix mMatrix = new Matrix();
 
@@ -1495,18 +1455,14 @@ public class PickerView extends LinearLayout {
         }
 
         // draw the selection dividers
-        if (mSelectionDivider != null) {
+        if (mSelectionDividerPaint != null) {
             // draw the top divider
-            final int topOfTopDivider = mTopSelectionDividerTop;
-            final int bottomOfTopDivider = topOfTopDivider + mSelectionDividerHeight;
-            mSelectionDivider.setBounds(0, topOfTopDivider, getRight(), bottomOfTopDivider);
-            mSelectionDivider.draw(canvas);
+            final int topY = mTopSelectionDividerTop + mSelectionDividerHeight / 2;
+            canvas.drawLine(0, topY, getRight(), topY, mSelectionDividerPaint);
 
             // draw the bottom divider
-            final int bottomOfBottomDivider = mBottomSelectionDividerBottom;
-            final int topOfBottomDivider = bottomOfBottomDivider - mSelectionDividerHeight;
-            mSelectionDivider.setBounds(0, topOfBottomDivider, getRight(), bottomOfBottomDivider);
-            mSelectionDivider.draw(canvas);
+            final int bottomY = mBottomSelectionDividerBottom - mSelectionDividerHeight / 2;
+            canvas.drawLine(0, bottomY, getRight(), bottomY, mSelectionDividerPaint);
         }
     }
 

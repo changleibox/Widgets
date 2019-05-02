@@ -177,7 +177,7 @@
         <!-- @hide Color for the solid color background if such for optimized rendering. -->
         <attr name="solidColor"/>
         <!-- @hide The divider for making the selection area. -->
-        <attr name="selectionDivider"/>
+        <attr name="selectionDividerColor" format="color"/>
         <!-- @hide The height of the selection divider. -->
         <attr name="selectionDividerHeight"/>
         <!-- @hide The distance between the two selection dividers. -->
