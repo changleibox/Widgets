@@ -1469,10 +1469,10 @@ public class PickerView extends LinearLayout {
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
             final float centerY = y - mMiddleItemOffsetY;
-            final float scale = 1.f - Math.abs((centerY - mMiddleItemY) / mMiddleItemY);
-            final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
             final float degreeScale = (mMiddleItemY - centerY) / mMiddleItemY;
             final float degree = 90 * mWheelItemOffset * degreeScale;
+            final float scale = 1.f - Math.abs(degreeScale);
+            final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
 
             mCamera.save();
             mCamera.rotateX(degree);
@@ -1482,7 +1482,7 @@ public class PickerView extends LinearLayout {
             mMatrix.postScale(realScale, realScale, x, centerY);
             mCamera.restore();
 
-            mSelectorWheelPaint.setAlpha((int) (255.f * realScale));
+            mSelectorWheelPaint.setAlpha((int) (255.f * (1.f - Math.abs(realScale - 1.f))));
 
             canvas.save();
             canvas.concat(mMatrix);
