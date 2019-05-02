@@ -1437,8 +1437,8 @@ public class PickerView extends LinearLayout {
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
             final float centerY = y - mMiddleItemOffsetY;
-            final float scale = 1.f - Math.abs(centerY / mMiddleItemY - 1.f);
-            final float degree = 90 * (1.f - centerY / mMiddleItemY);
+            final float scale = 1.f - Math.abs((centerY - mMiddleItemY) / mMiddleItemY);
+            final float degree = 90 * ((mMiddleItemY - centerY) / mMiddleItemY);
 
             canvas.save();
             mCamera.save();
@@ -1446,7 +1446,7 @@ public class PickerView extends LinearLayout {
             mCamera.getMatrix(mMatrix);
             mMatrix.preTranslate(-x, -centerY);
             mMatrix.postTranslate(x, centerY);
-            // mMatrix.postScale(scale, 1.0f, x, centerY);
+            mMatrix.postScale(scale, 1.0f, x, centerY);
             mCamera.restore();
 
             canvas.concat(mMatrix);
