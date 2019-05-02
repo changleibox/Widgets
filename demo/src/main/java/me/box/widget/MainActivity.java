@@ -53,20 +53,14 @@ public class MainActivity extends AppCompatActivity {
         final PickerView picker1 = findViewById(R.id.picker1);
         final PickerView picker2 = findViewById(R.id.picker2);
 
-        final String[] values = new String[22];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = "西红柿西瓜西红柿";
-        }
-        picker1.setWrapSelectorWheel(true);
-        picker1.setDisplayedValues(values);
-        picker1.setMinValue(0);
-        picker1.setMaxValue(values.length - 1);
-        // picker1.setFormatter(new PickerView.Formatter() {
-        //     @Override
-        //     public String format(int value) {
-        //         return String.format(Locale.getDefault(), "%d年", value);
-        //     }
-        // });
+        picker1.setMinValue(1900);
+        picker1.setMaxValue(2100);
+        picker1.setFormatter(new PickerView.Formatter() {
+            @Override
+            public String format(int value) {
+                return String.format(Locale.getDefault(), "%d年", value);
+            }
+        });
         picker2.setMinValue(0);
         picker2.setMaxValue(11);
         picker2.setFormatter(new PickerView.Formatter() {
