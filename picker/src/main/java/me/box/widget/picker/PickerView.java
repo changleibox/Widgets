@@ -721,11 +721,57 @@ public class PickerView extends LinearLayout {
         final int newHeightMeasureSpec = makeMeasureSpec(heightMeasureSpec, mMaxHeight);
         super.onMeasure(newWidthMeasureSpec, newHeightMeasureSpec);
         // Flag if we are measured with width or height less than the respective min.
-        final int widthSize = resolveSizeAndStateRespectingMinSize(mMinWidth, getMeasuredWidth(),
-                widthMeasureSpec);
-        final int heightSize = resolveSizeAndStateRespectingMinSize(mMinHeight, getMeasuredHeight(),
-                heightMeasureSpec);
+        // final int widthSize = resolveSizeAndStateRespectingMinSize(mMinWidth, getMeasuredWidth(), widthMeasureSpec);
+        final int heightSize = resolveSizeAndStateRespectingMinSize(mMinHeight, getMeasuredHeight(), heightMeasureSpec);
+        final int widthSize = resolveWithSize(heightSize, widthMeasureSpec);
         setMeasuredDimension(widthSize, heightSize);
+    }
+
+    private int resolveWithSize(int heightSize, int widthMeasureSpec) {
+        final int[] selectorIndices = mSelectorIndices;
+        final int totalTextHeight = selectorIndices.length * mTextSize;
+        final float totalTextGapHeight = heightSize - totalTextHeight;
+        final float textGapCount = selectorIndices.length;
+        final float selectorTextGapHeight = (int) (totalTextGapHeight / textGapCount + 0.5f);
+        final float selectorElementHeight = mTextSize + selectorTextGapHeight;
+        final int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
+        final float initialScrollOffset = editTextTextPosition - (selectorElementHeight * mMiddleItemIndex);
+        final float currentScrollOffset = initialScrollOffset;
+        final float middleItemY = heightSize / 2.f;
+        final float middleItemOffsetY = mMiddleItemIndex * selectorElementHeight + initialScrollOffset - middleItemY;
+        final Paint paint = new Paint(mSelectorWheelPaint);
+        paint.setTextSize(getMaxTextSize(currentScrollOffset, middleItemOffsetY, middleItemY, selectorElementHeight));
+        int maxWidth = tryComputeMaxWidth(paint);
+        if (maxWidth <= Integer.MIN_VALUE) {
+            maxWidth = mMaxWidth;
+        }
+        return resolveSizeAndStateRespectingMinSize(mMinWidth, maxWidth, widthMeasureSpec);
+    }
+
+    private float getMaxTextSize(float currentScrollOffset, float middleItemOffsetY, float middleItemY, float selectorElementHeight) {
+        float y = currentScrollOffset;
+        float textSize = mTextSize;
+        final int[] selectorIndices = mSelectorIndices;
+        for (int i = 0; i < selectorIndices.length; i++) {
+            final int selectorIndex = selectorIndices[i];
+            final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
+            // Do not draw the middle item if input is visible since the input
+            // is shown only if the wheel is static and it covers the middle
+            // item. Otherwise, if the user starts editing the text via the
+            // IME he may see a dimmed version of the old value intermixed
+            // with the new one.
+            final float centerY = y - middleItemOffsetY;
+            final float scale = 1.f - Math.abs((centerY - middleItemY) / middleItemY);
+            final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
+
+            final float tmpTextSize = mTextSize * realScale;
+            if (tmpTextSize > textSize) {
+                textSize = tmpTextSize;
+            }
+
+            y += selectorElementHeight;
+        }
+        return textSize;
     }
 
     /**
@@ -1146,13 +1192,20 @@ public class PickerView extends LinearLayout {
      * Computes the max width if no such specified as an attribute.
      */
     private void tryComputeMaxWidth() {
+        final int maxWidth = tryComputeMaxWidth(mSelectorWheelPaint);
+        if (maxWidth > Integer.MIN_VALUE) {
+            invalidate();
+        }
+    }
+
+    private int tryComputeMaxWidth(@NonNull Paint paint) {
         if (!mComputeMaxWidth) {
-            return;
+            return Integer.MIN_VALUE;
         }
         int maxTextWidth = 0;
         if (mDisplayedValues == null) {
             for (int i = mMinValue; i < mMaxValue; i++) {
-                final float textWidth = mSelectorWheelPaint.measureText(formatNumber(i));
+                final float textWidth = paint.measureText(formatNumber(i));
                 if (textWidth > maxTextWidth) {
                     maxTextWidth = (int) textWidth;
                 }
@@ -1160,7 +1213,7 @@ public class PickerView extends LinearLayout {
         } else {
             final int valueCount = mDisplayedValues.length;
             for (int i = 0; i < valueCount; i++) {
-                final float textWidth = mSelectorWheelPaint.measureText(mDisplayedValues[i]);
+                final float textWidth = paint.measureText(mDisplayedValues[i]);
                 if (textWidth > maxTextWidth) {
                     maxTextWidth = (int) textWidth;
                 }
@@ -1173,8 +1226,9 @@ public class PickerView extends LinearLayout {
             } else {
                 mMaxWidth = mMinWidth;
             }
-            invalidate();
+            return mMaxWidth;
         }
+        return Integer.MIN_VALUE;
     }
 
     /**
@@ -1439,7 +1493,8 @@ public class PickerView extends LinearLayout {
             final float centerY = y - mMiddleItemOffsetY;
             final float scale = 1.f - Math.abs((centerY - mMiddleItemY) / mMiddleItemY);
             final float realScale = (1.f - mWheelItemOffset) + mWheelItemOffset * scale;
-            final float degree = 90 * ((mMiddleItemY - centerY) / mMiddleItemY);
+            final float degreeScale = (mMiddleItemY - centerY) / mMiddleItemY;
+            final float degree = 90 * mWheelItemOffset * degreeScale;
 
             mCamera.save();
             mCamera.rotateX(degree);
@@ -1524,8 +1579,7 @@ public class PickerView extends LinearLayout {
      * @param measureSpec  The current measure spec.
      * @return The resolved size and state.
      */
-    private int resolveSizeAndStateRespectingMinSize(
-            int minSize, int measuredSize, int measureSpec) {
+    private int resolveSizeAndStateRespectingMinSize(int minSize, int measuredSize, int measureSpec) {
         if (minSize != SIZE_UNSPECIFIED) {
             final int desiredWidth = Math.max(minSize, measuredSize);
             return resolveSizeAndState(desiredWidth, measureSpec, 0);
