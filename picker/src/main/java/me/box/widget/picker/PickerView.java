@@ -439,6 +439,10 @@ public class PickerView extends LinearLayout {
 
     private final float mWheelItemOffset;
 
+    private float mMiddleItemY;
+
+    private float mMiddleItemOffsetY;
+
     /**
      * Interface to listen for changes of the current value.
      */
@@ -1422,14 +1426,9 @@ public class PickerView extends LinearLayout {
         final float x = (getRight() - getLeft()) >> 1;
         float y = mCurrentScrollOffset;
 
-        final float currentScrollOffset = mCurrentScrollOffset;
-        final float initialScrollOffset = mInitialScrollOffset;
         // draw the selector wheel
-        final int[] selectorIndices = mSelectorIndices;
-        final Paint paint = new Paint(mSelectorWheelPaint);
         final float measuredHeight = getMeasuredHeight();
-        final float middleItemY = measuredHeight / 2.f;
-        final float offsetY = mMiddleItemIndex * mSelectorElementHeight + initialScrollOffset - middleItemY;
+        final int[] selectorIndices = mSelectorIndices;
         for (int i = 0; i < selectorIndices.length; i++) {
             final int selectorIndex = selectorIndices[i];
             final String scrollSelectorValue = mSelectorIndexToStringCache.get(selectorIndex);
@@ -1438,14 +1437,14 @@ public class PickerView extends LinearLayout {
             // item. Otherwise, if the user starts editing the text via the
             // IME he may see a dimmed version of the old value intermixed
             // with the new one.
-            final float centerY = y - offsetY;
+            final float centerY = y - mMiddleItemOffsetY;
             float scale = 0.f;
             float degree = 0.f;
-            if (centerY <= middleItemY) {
-                scale = centerY / middleItemY;
+            if (centerY <= mMiddleItemY) {
+                scale = centerY / mMiddleItemY;
                 degree = 90 * (1.f - scale);
             } else {
-                scale = (measuredHeight - centerY) / middleItemY;
+                scale = (measuredHeight - centerY) / mMiddleItemY;
                 degree = -90 * (1.f - scale);
             }
 
@@ -1459,7 +1458,7 @@ public class PickerView extends LinearLayout {
             mCamera.restore();
 
             canvas.concat(mMatrix);
-            canvas.drawText(scrollSelectorValue, x, y, paint);
+            canvas.drawText(scrollSelectorValue, x, y, mSelectorWheelPaint);
             canvas.restore();
             y += mSelectorElementHeight;
         }
@@ -1623,6 +1622,8 @@ public class PickerView extends LinearLayout {
         final int editTextTextPosition = mInputText.getBaseline() + mInputText.getTop();
         mInitialScrollOffset = editTextTextPosition - (mSelectorElementHeight * mMiddleItemIndex);
         mCurrentScrollOffset = mInitialScrollOffset;
+        mMiddleItemY = (getBottom() - getTop()) / 2.f;
+        mMiddleItemOffsetY = mMiddleItemIndex * mSelectorElementHeight + mInitialScrollOffset - mMiddleItemY;
         updateInputTextView();
     }
 
