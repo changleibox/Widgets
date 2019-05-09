@@ -13,7 +13,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Scroller;
 
 public class Custom3DView extends ViewGroup {
@@ -59,7 +59,7 @@ public class Custom3DView extends ViewGroup {
         mCamera = new Camera();
         mMatrix = new Matrix();
         if (mScroller == null) {
-            mScroller = new Scroller(getContext(), new LinearInterpolator());
+            mScroller = new Scroller(getContext(), new DecelerateInterpolator(2.5f));
         }
     }
 
@@ -232,8 +232,8 @@ public class Custom3DView extends ViewGroup {
         STATE = STATE_NORMAL;
         startY = getScrollY();
         delta = mHeight * (mStartScreen + 1) - getScrollY();
-        duration = (Math.abs(delta)) * 4;
-        mScroller.startScroll(0, startY, 0, delta, duration);
+        duration = (Math.abs(delta)) * 1;
+        mScroller.startScroll(0, startY, 0, delta, 300);
     }
 
     /**
@@ -252,8 +252,8 @@ public class Custom3DView extends ViewGroup {
         setScrollY(startY);
         //mScroller移动的距离
         delta = -(startY - (mStartScreen + 1) * mHeight);
-        duration = (Math.abs(delta)) * 2;
-        mScroller.startScroll(0, startY, 0, delta, duration);
+        duration = (Math.abs(delta)) * 1;
+        mScroller.startScroll(0, startY, 0, delta, 300);
     }
 
     /**
@@ -269,8 +269,8 @@ public class Custom3DView extends ViewGroup {
         startY = getScrollY() - mHeight;
         setScrollY(startY);
         delta = mHeight * (mStartScreen + 1) - startY;
-        duration = (Math.abs(delta)) * 2;
-        mScroller.startScroll(0, startY, 0, delta, duration);
+        duration = (Math.abs(delta)) * 1;
+        mScroller.startScroll(0, startY, 0, delta, 300);
     }
 
     /**
@@ -344,17 +344,17 @@ public class Custom3DView extends ViewGroup {
      */
 
     private void drawScreen(Canvas canvas, int screen, long drawingTime) {
+        final View child = getChildAt(screen);
         // 得到当前子View的高度
-        final int height = getHeight();
+        final int height = child.getHeight();
         final int scrollHeight = screen * height;
         final int scrollY = this.getScrollY();
         // 偏移量不足的时
         if (scrollHeight > scrollY + height || scrollHeight + height < scrollY) {
             return;
         }
-        final View child = getChildAt(screen);
         final int faceIndex = screen;
-        final float currentDegree = getScrollY() * (angle / getMeasuredHeight());
+        final float currentDegree = scrollY * (angle / height);
         final float faceDegree = currentDegree - faceIndex * angle;
         if (faceDegree > 90 || faceDegree < -90) {
             return;
@@ -373,5 +373,7 @@ public class Custom3DView extends ViewGroup {
         canvas.concat(matrix);
         drawChild(canvas, child, drawingTime);
         canvas.restore();
+
+        System.out.println(screen + ", " + faceDegree + ", " + centerY);
     }
 }
